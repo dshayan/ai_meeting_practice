@@ -3,13 +3,11 @@ import json
 from datetime import datetime
 import streamlit as st
 from openai import OpenAI
+from anthropic import Anthropic
 
 # Import config
 from config import (
-    OPENAI_API_KEY,
-    CHAT_MODEL_CONFIG,
-    EVALUATION_CONFIG,
-    REPORT_CONFIG,
+    MODEL_CONFIG,
     MEETINGS_DIR,
     PROMPTS_DIR,
     CUSTOMERS_DIR,
@@ -18,16 +16,26 @@ from config import (
     REPORT_EXTENSION
 )
 
-# Initialize OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Initialize client based on provider
+if MODEL_CONFIG["provider"] == "anthropic":
+    client = Anthropic(api_key=MODEL_CONFIG["api_key"])
+else:
+    client = OpenAI(api_key=MODEL_CONFIG["api_key"])
 
 # Helper Functions
 def list_customer_profiles():
     """Get list of available customer profiles"""
     profiles = []
+    # Check if directory exists
+    if not CUSTOMERS_DIR.exists():
+        st.error(f"Customers directory not found: {CUSTOMERS_DIR}")
+        return profiles
+        
+    # List all files in directory
     for file in CUSTOMERS_DIR.glob(f"*{PROFILE_EXTENSION}"):
         if file.is_file():
             profiles.append(file.stem)
+    
     return sorted(profiles)
 
 def read_prompt(filename, is_customer=False):
@@ -95,12 +103,21 @@ def save_meeting(profile_name):
         return None
 
 def get_chat_response(messages, evaluation_update=False):
-    """Get response from OpenAI API"""
+    """Get response from API"""
     try:
+        # Initialize config first
+        config = MODEL_CONFIG["evaluation"].copy() if evaluation_update else MODEL_CONFIG["chat"].copy()
+        
         if not evaluation_update:
             if st.session_state.customer_model and st.session_state.evaluation_model:
                 eval_context = f"{st.session_state.customer_model}\n\n{st.session_state.evaluation_model}"
-                messages = [{"role": "system", "content": eval_context}] + messages[1:]
+                if MODEL_CONFIG["provider"] == "anthropic":
+                    # For Anthropic, use system parameter
+                    messages = messages[1:]  # Remove old system message
+                    config["system"] = eval_context
+                else:
+                    # For OpenAI, keep system message in messages
+                    messages = [{"role": "system", "content": eval_context}] + messages[1:]
             else:
                 st.error("Customer model or evaluation model is missing")
                 return None
@@ -108,23 +125,41 @@ def get_chat_response(messages, evaluation_update=False):
         # Filter out any messages with null content
         valid_messages = [
             msg for msg in messages 
-            if msg.get("content") is not None and msg["content"].strip() != ""
+            if msg.get("content") is not None and isinstance(msg["content"], str) and msg["content"].strip() != ""
         ]
         
         if not valid_messages:
             st.error("No valid messages to send")
             return None
-
-        config = EVALUATION_CONFIG if evaluation_update else CHAT_MODEL_CONFIG
-        response = client.chat.completions.create(
-            messages=valid_messages,
-            **config
-        )
-        return response.choices[0].message.content
+        
+        if MODEL_CONFIG["provider"] == "anthropic":
+            # Convert OpenAI message format to Anthropic format
+            anthropic_messages = []
+            for msg in valid_messages:
+                if msg["role"] == "system":
+                    config["system"] = msg["content"]
+                else:
+                    anthropic_messages.append({
+                        "role": msg["role"],
+                        "content": msg["content"]
+                    })
+            
+            response = client.messages.create(
+                messages=anthropic_messages,
+                **config
+            )
+            # Extract the text content from the response
+            return response.content[0].text if response.content else ""
+        else:
+            response = client.chat.completions.create(
+                messages=valid_messages,
+                **config
+            )
+            return response.choices[0].message.content
     except Exception as e:
         st.error(f"Error in API call: {str(e)}")
         return None
-
+    
 def update_user_evaluation(messages):
     """Update the ongoing evaluation of the user"""
     eval_messages = messages.copy()
