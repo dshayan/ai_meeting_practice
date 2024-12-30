@@ -1,95 +1,102 @@
 # Imports
-import os
 import json
 from datetime import datetime
-
 import streamlit as st
 from openai import OpenAI
-from dotenv import load_dotenv
 
-# Configuration
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Import config
+from config import (
+    OPENAI_API_KEY,
+    CHAT_MODEL_CONFIG,
+    EVALUATION_CONFIG,
+    REPORT_CONFIG,
+    MEETINGS_DIR,
+    PROMPTS_DIR,
+    CUSTOMERS_DIR,
+    PROFILE_EXTENSION,
+    MEETING_EXTENSION,
+    REPORT_EXTENSION
+)
 
-# Create meetings directory if it doesn't exist
-if not os.path.exists('meetings'):
-    os.makedirs('meetings')
-
+# Initialize OpenAI client
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Helper Functions
 def list_customer_profiles():
     """Get list of available customer profiles"""
-    customers_dir = os.path.join('prompts', 'customers')
     profiles = []
-    for file in os.listdir(customers_dir):
-        if file.endswith('.txt'):
-            profiles.append(file[:-4])  # Remove .txt extension
-    return profiles
-
+    for file in CUSTOMERS_DIR.glob(f"*{PROFILE_EXTENSION}"):
+        if file.is_file():
+            profiles.append(file.stem)
+    return sorted(profiles)
 
 def read_prompt(filename, is_customer=False):
     """Read prompt from file"""
-    if is_customer:
-        path = os.path.join('prompts', 'customers', filename + '.txt')
-    else:
-        path = os.path.join('prompts', filename + '.txt')
     try:
-        with open(path, 'r') as file:
-            return file.read().strip()
+        path = CUSTOMERS_DIR / f"{filename}{PROFILE_EXTENSION}" if is_customer else PROMPTS_DIR / f"{filename}{PROFILE_EXTENSION}"
+        return path.read_text().strip()
     except FileNotFoundError:
         st.error(f"Prompt file not found: {path}")
         return ""
 
+def list_saved_meetings():
+    """List all saved meetings"""
+    try:
+        meetings = []
+        for file in MEETINGS_DIR.glob(f"*{MEETING_EXTENSION}"):
+            if file.is_file():
+                try:
+                    data = json.loads(file.read_text())
+                    meetings.append({
+                        'filename': file.name,
+                        'profile': data.get('profile', 'Unknown'),
+                        'timestamp': data.get('timestamp', '')
+                    })
+                except json.JSONDecodeError:
+                    st.error(f"Error reading meeting file: {file}")
+                    continue
+        return sorted(meetings, key=lambda x: x['timestamp'], reverse=True)
+    except Exception as e:
+        st.error(f"Error listing meetings: {str(e)}")
+        return []
+
+def load_meeting(filename):
+    """Load meeting data from file"""
+    try:
+        filepath = MEETINGS_DIR / filename
+        if not filepath.exists():
+            st.error(f"Meeting file not found: {filepath}")
+            return None
+        return json.loads(filepath.read_text())
+    except Exception as e:
+        st.error(f"Error loading meeting: {str(e)}")
+        return None
 
 def save_meeting(profile_name):
     """Save current meeting to file"""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    meeting_data = {
-        'profile': profile_name if profile_name else "Unknown Customer",
-        'messages': st.session_state.messages,
-        'evaluations': st.session_state.evaluations,
-        'timestamp': timestamp,
-        'customer_model': st.session_state.customer_model,
-        'evaluation_model': st.session_state.evaluation_model,
-        'report_model': st.session_state.report_model
-    }
-    
-    filename = f"meeting_{profile_name}_{timestamp}.json"
-    filepath = os.path.join('meetings', filename)
-    with open(filepath, 'w') as f:
-        json.dump(meeting_data, f)
-    return filename
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        meeting_data = {
+            'profile': profile_name if profile_name else "Unknown Customer",
+            'messages': st.session_state.messages,
+            'evaluations': st.session_state.evaluations,
+            'timestamp': timestamp,
+            'customer_model': st.session_state.customer_model,
+            'evaluation_model': st.session_state.evaluation_model,
+            'report_model': st.session_state.report_model
+        }
+        
+        filename = f"meeting_{profile_name}_{timestamp}{MEETING_EXTENSION}"
+        filepath = MEETINGS_DIR / filename
+        filepath.write_text(json.dumps(meeting_data, indent=2))
+        return filename
+    except Exception as e:
+        st.error(f"Error saving meeting: {str(e)}")
+        return None
 
-
-def load_meeting(filename):
-    """Load meeting from file"""
-    filepath = os.path.join('meetings', filename)
-    with open(filepath, 'r') as f:
-        data = json.load(f)
-    return data
-
-
-def list_saved_meetings():
-    """List all saved meetings"""
-    if not os.path.exists('meetings'):
-        return []
-    meetings = []
-    for file in os.listdir('meetings'):
-        if file.endswith('.json'):
-            data = load_meeting(file)
-            meetings.append({
-                'filename': file,
-                'profile': data['profile'],
-                'timestamp': data['timestamp']
-            })
-    return sorted(meetings, key=lambda x: x['timestamp'], reverse=True)
-
-
-# Chat and Evaluation Functions
 def get_chat_response(messages, evaluation_update=False):
     """Get response from OpenAI API"""
     try:
-        # Add evaluation model to system message if not evaluation update
         if not evaluation_update:
             if st.session_state.customer_model and st.session_state.evaluation_model:
                 eval_context = f"{st.session_state.customer_model}\n\n{st.session_state.evaluation_model}"
@@ -97,7 +104,7 @@ def get_chat_response(messages, evaluation_update=False):
             else:
                 st.error("Customer model or evaluation model is missing")
                 return None
-        
+
         # Filter out any messages with null content
         valid_messages = [
             msg for msg in messages 
@@ -108,16 +115,15 @@ def get_chat_response(messages, evaluation_update=False):
             st.error("No valid messages to send")
             return None
 
+        config = EVALUATION_CONFIG if evaluation_update else CHAT_MODEL_CONFIG
         response = client.chat.completions.create(
-            model="gpt-4o",
             messages=valid_messages,
-            temperature=0.7,
+            **config
         )
         return response.choices[0].message.content
     except Exception as e:
         st.error(f"Error in API call: {str(e)}")
         return None
-
 
 def update_user_evaluation(messages):
     """Update the ongoing evaluation of the user"""
@@ -127,7 +133,6 @@ def update_user_evaluation(messages):
     if evaluation:
         st.session_state.evaluations.append(evaluation)
 
-
 def generate_final_report():
     """Generate final report using all conversation data"""
     report_messages = st.session_state.messages.copy()
@@ -136,15 +141,20 @@ def generate_final_report():
     report_messages.append({"role": "user", "content": "Generate final evaluation report"})
     return get_chat_response(report_messages)
 
-
 def save_report(report):
     """Save report to file"""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"vendor_evaluation_report_{timestamp}.txt"
-    with open(filename, "w") as f:
-        f.write(report)
-    return filename
-
+    try:
+        if not report:
+            return None
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"report_{st.session_state.customer_profile}_{timestamp}{REPORT_EXTENSION}"
+        filepath = MEETINGS_DIR / filename
+        filepath.write_text(report)
+        return filename
+    except Exception as e:
+        st.error(f"Error saving report: {str(e)}")
+        return None
 
 # Initialize Streamlit Session State
 if "initialized" not in st.session_state:
@@ -158,14 +168,12 @@ if "initialized" not in st.session_state:
     st.session_state.evaluation_model = None
     st.session_state.report_model = None
 
-
 # Main UI - Title Section
 if st.session_state.initialized and st.session_state.customer_profile:
     st.title(f"Meeting with {st.session_state.customer_profile}")
     st.write(f"Last edit at {datetime.now().strftime('%Y-%m-%d')}")
 else:
     st.title("Who do you want to meet?")
-
 
 # Sidebar
 with st.sidebar:
@@ -221,7 +229,6 @@ with st.sidebar:
     else:
         st.write("No saved meetings yet.")
 
-
 # Customer Profile Selection
 if not st.session_state.initialized:
     profiles = list_customer_profiles()
@@ -245,7 +252,6 @@ if not st.session_state.initialized:
         ]
         st.session_state.initialized = True
         st.rerun()
-
 
 # Chat Interface
 for message in st.session_state.messages:
