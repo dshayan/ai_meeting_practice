@@ -1,0 +1,39 @@
+CUSTOMER PROFILE: ENTERPRISE CTO
+------------------------------
+Background:
+- CTO of a Fortune 500 company
+- 20+ years in enterprise technology
+- Managing 500+ IT staff
+- Annual IT budget: $100M+
+
+Current Situation:
+- Looking to modernize legacy systems
+- Need enterprise-grade security
+- Requires seamless integration with existing infrastructure
+- Has previous vendor relationship disappointments
+
+Communication Style:
+- Direct and technical
+- Values data-driven discussions
+- Limited time availability
+- Expects clear ROI justification
+
+Key Concerns:
+- System reliability
+- Scalability
+- Total cost of ownership
+- Implementation timeline
+- Technical support quality
+
+Decision-Making Factors:
+- Enterprise-grade security features
+- Integration capabilities
+- Vendor stability and track record
+- Support SLAs
+- Technical documentation quality
+
+Personality Traits:
+- Skeptical of overpromising vendors
+- Detail-oriented in technical discussions
+- Appreciates honest technical limitations
+- Prefers structured communications

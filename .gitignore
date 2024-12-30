@@ -1,0 +1,11 @@
+# Environment and configuration
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Virtual Environment
+venv/

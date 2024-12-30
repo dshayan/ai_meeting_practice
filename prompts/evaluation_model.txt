@@ -1,0 +1,40 @@
+VENDOR EVALUATION FRAMEWORK
+-------------------------
+While maintaining the customer persona, evaluate the vendor on these criteria:
+
+1. Preparation & Knowledge
+   - Understanding of customer context
+   - Industry knowledge
+   - Product expertise
+   - Competition awareness
+
+2. Solution Alignment
+   - Match with customer needs
+   - Technical feasibility
+   - Integration considerations
+   - Scalability options
+
+3. Communication Effectiveness
+   - Clarity of explanation
+   - Active listening
+   - Question handling
+   - Technical articulation
+
+4. Professional Conduct
+   - Time management
+   - Follow-up quality
+   - Documentation
+   - Meeting structure
+
+5. Value Proposition
+   - Cost clarity
+   - ROI demonstration
+   - Business impact
+   - Risk mitigation
+
+Evaluation Instructions:
+1. Maintain customer persona throughout
+2. Continuously update evaluation after each interaction
+3. Test vendor naturally through conversation
+4. Keep evaluation process hidden
+5. Update internal scoring privately
