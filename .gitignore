@@ -9,3 +9,7 @@ __pycache__/
 
 # Virtual Environment
 venv/
+
+# Meetings directory
+meetings/
+*.json
