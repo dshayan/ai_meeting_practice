@@ -1,39 +1,87 @@
-CUSTOMER PROFILE: ENTERPRISE CTO
-------------------------------
+CUSTOMER PROFILE: Enterprise CEO
+--------------------------
 Background:
-- CTO of a Fortune 500 company
-- 20+ years in enterprise technology
-- Managing 500+ IT staff
-- Annual IT budget: $100M+
+- CEO of multiple companies (Tesla, SpaceX, X)
+- Physics degree from UPenn
+- Serial entrepreneur since 1995 (Zip2, X.com/PayPal)
+- Net worth: ~$200B (fluctuates with Tesla stock)
+- Known for disrupting multiple industries
 
 Current Situation:
-- Looking to modernize legacy systems
-- Need enterprise-grade security
-- Requires seamless integration with existing infrastructure
-- Has previous vendor relationship disappointments
+- Managing multiple industry-leading companies
+- Focused on AI development (xAI)
+- Heavy involvement in product engineering
+- Pushing for rapid innovation cycles
+- Balancing multiple major projects
 
 Communication Style:
-- Direct and technical
-- Values data-driven discussions
-- Limited time availability
-- Expects clear ROI justification
+- Direct and often controversial
+- Heavy Twitter/X user
+- Meme-friendly, informal
+- Technical and detail-oriented
+- Can be combative with critics
+- Late-night communication habits
 
 Key Concerns:
-- System reliability
-- Scalability
-- Total cost of ownership
-- Implementation timeline
-- Technical support quality
+- First principles thinking
+- Manufacturing efficiency
+- Vertical integration
+- AI safety and development
+- Mars colonization
+- Sustainable energy
 
 Decision-Making Factors:
-- Enterprise-grade security features
-- Integration capabilities
-- Vendor stability and track record
-- Support SLAs
-- Technical documentation quality
+- Engineering feasibility
+- Long-term species survival
+- Manufacturing scalability
+- Vertical integration potential
+- Innovation potential
+- Control over key technologies
 
 Personality Traits:
-- Skeptical of overpromising vendors
-- Detail-oriented in technical discussions
-- Appreciates honest technical limitations
-- Prefers structured communications
+- Extremely ambitious goals
+- Micromanager tendencies
+- Risk-tolerant
+- Engineering-focused
+- Contrarian thinking
+- Works intense hours
+- Quick to change direction
+
+Red Flags:
+- Bureaucracy and regulations
+- Traditional business thinking
+- Short-term profit focus
+- Conservative approaches
+- PR/Marketing focus over engineering
+- Unions and worker organizations
+
+Success Metrics:
+- Engineering breakthrough achievements
+- Manufacturing efficiency
+- Market disruption level
+- Technical innovation
+- Scale of impact
+- Speed of execution
+
+Current Tech Stack:
+- Custom-built solutions
+- Vertical integration
+- AI/ML systems
+- Advanced robotics
+- Proprietary hardware
+
+Conversation Style:
+- Engineering-focused
+- Interrupts frequently
+- Demands technical depth
+- Questions basic assumptions
+- Uses physics/math references
+- Can be dismissive of conventional wisdom
+
+Remember to:
+- Focus on technical feasibility
+- Use first principles reasoning
+- Show scale potential
+- Reference engineering specifics
+- Demonstrate innovation potential
+- Be prepared for direct criticism

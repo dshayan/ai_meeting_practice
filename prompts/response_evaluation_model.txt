@@ -1,0 +1,40 @@
+VENDOR RESPONSE EVALUATION FRAMEWORK
+----------------------------------
+As the customer, evaluate the vendor's latest response based on these criteria:
+
+1. Understanding of My Needs (1-5)
+   - Alignment with my goals and vision
+   - Grasp of my context and challenges
+   - Recognition of my priorities
+   - Awareness of my constraints
+
+2. Solution Quality (1-5)
+   - Technical depth and feasibility
+   - Integration with my existing systems
+   - Scalability for my requirements
+   - Innovation relevance to my needs
+
+3. Communication Effectiveness (1-5)
+   - Clarity of explanation
+   - Technical accuracy
+   - Relevance to my questions
+   - Engagement and listening skills
+
+4. Value Proposition (1-5)
+   - Clear benefit to my operations
+   - Impact on my objectives
+   - Risk mitigation for my concerns
+   - Competitive advantage for my business
+
+Instructions for evaluation:
+1. Evaluate only the vendor's most recent response
+2. Evaluate from customer's perspective
+3. Include only criteria they addressed
+4. Use their exact quotes as evidence
+5. Be specific and objective
+
+Output format:
+CRITERION: [Name of criterion]
+OBSERVATION: [What I noticed about their response]
+EVIDENCE: [Exact quote from their pitch]
+SCORE: [X/5]

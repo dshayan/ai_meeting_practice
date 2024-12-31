@@ -2,13 +2,12 @@
 import json
 from datetime import datetime
 import streamlit as st
-from openai import OpenAI
 from anthropic import Anthropic
 
 # Import config
 from config import (
     MODEL_CONFIG,
-    MEETINGS_DIR,
+    MEETINGS_DATA_DIR,
     PROMPTS_DIR,
     CUSTOMERS_DIR,
     PROFILE_EXTENSION,
@@ -16,11 +15,8 @@ from config import (
     REPORT_EXTENSION
 )
 
-# Initialize client based on provider
-if MODEL_CONFIG["provider"] == "anthropic":
-    client = Anthropic(api_key=MODEL_CONFIG["api_key"])
-else:
-    client = OpenAI(api_key=MODEL_CONFIG["api_key"])
+# Initialize Anthropic client
+client = Anthropic(api_key=MODEL_CONFIG["api_key"])
 
 # Helper Functions
 def list_customer_profiles():
@@ -51,14 +47,14 @@ def list_saved_meetings():
     """List all saved meetings"""
     try:
         meetings = []
-        for file in MEETINGS_DIR.glob(f"*{MEETING_EXTENSION}"):
+        for file in MEETINGS_DATA_DIR.glob(f"*{MEETING_EXTENSION}"):
             if file.is_file():
                 try:
                     data = json.loads(file.read_text())
                     meetings.append({
                         'filename': file.name,
-                        'profile': data.get('profile', 'Unknown'),
-                        'timestamp': data.get('timestamp', '')
+                        'customer_profile': data.get('customer_profile', 'Unknown Customer'),
+                        'timestamp': data.get('meeting_start', '')  # Changed from 'timestamp' to 'meeting_start'
                     })
                 except json.JSONDecodeError:
                     st.error(f"Error reading meeting file: {file}")
@@ -71,11 +67,40 @@ def list_saved_meetings():
 def load_meeting(filename):
     """Load meeting data from file"""
     try:
-        filepath = MEETINGS_DIR / filename
+        filepath = MEETINGS_DATA_DIR / filename
         if not filepath.exists():
             st.error(f"Meeting file not found: {filepath}")
             return None
-        return json.loads(filepath.read_text())
+        
+        data = json.loads(filepath.read_text())
+        
+        # Convert old format to new format if necessary
+        if 'vendor_messages' in data:
+            # Create chronological conversation from old format
+            conversation = []
+            vendor_msgs = data['vendor_messages']
+            customer_msgs = data['customer_responses']
+            
+            # Zip the messages together to maintain order
+            for i in range(max(len(vendor_msgs), len(customer_msgs))):
+                if i < len(vendor_msgs):
+                    conversation.append({
+                        **vendor_msgs[i],
+                        'timestamp': data.get('timestamp', '')
+                    })
+                if i < len(customer_msgs):
+                    conversation.append({
+                        **customer_msgs[i],
+                        'timestamp': data.get('timestamp', '')
+                    })
+            
+            # Update to new format
+            data['conversation'] = conversation
+            del data['vendor_messages']
+            del data['customer_responses']
+            data['meeting_start'] = data.pop('timestamp', '')
+            
+        return data
     except Exception as e:
         st.error(f"Error loading meeting: {str(e)}")
         return None
@@ -83,97 +108,107 @@ def load_meeting(filename):
 def save_meeting(profile_name):
     """Save current meeting to file"""
     try:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Use existing timestamp if within same interaction cycle, or generate new one
+        timestamp = getattr(st.session_state, 'current_meeting_timestamp', 
+                          datetime.now().strftime("%Y%m%d_%H%M%S"))
+        
+        # Convert messages to a chronological format with timestamps
+        conversation_flow = []
+        for msg in st.session_state.messages:
+            if msg['role'] != 'system':  # Skip the system prompt
+                conversation_flow.append({
+                    'role': msg['role'],
+                    'content': msg['content'],
+                    'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                })
+        
         meeting_data = {
-            'profile': profile_name if profile_name else "Unknown Customer",
-            'messages': st.session_state.messages,
-            'evaluations': st.session_state.evaluations,
-            'timestamp': timestamp,
+            'customer_profile': profile_name if profile_name else "Unknown Customer",
+            'conversation': conversation_flow,
+            'vendor_evaluations': st.session_state.evaluations,
+            'meeting_start': timestamp,
             'customer_model': st.session_state.customer_model,
             'evaluation_model': st.session_state.evaluation_model,
             'report_model': st.session_state.report_model
         }
         
-        filename = f"meeting_{profile_name}_{timestamp}{MEETING_EXTENSION}"
-        filepath = MEETINGS_DIR / filename
+        # Use the same timestamp for filename
+        filename = f"meeting_with_{profile_name}_{timestamp}{MEETING_EXTENSION}"
+        filepath = MEETINGS_DATA_DIR / filename
         filepath.write_text(json.dumps(meeting_data, indent=2))
+        
+        # Update session state with current filename and timestamp
+        st.session_state.current_meeting_filename = filename
+        st.session_state.current_meeting_timestamp = timestamp
+        
         return filename
     except Exception as e:
         st.error(f"Error saving meeting: {str(e)}")
         return None
 
-def get_chat_response(messages, evaluation_update=False):
-    """Get response from API"""
+def save_evaluation(evaluation, profile_name):
+    """Save evaluation to file"""
     try:
-        # Initialize config first
-        config = MODEL_CONFIG["evaluation"].copy() if evaluation_update else MODEL_CONFIG["chat"].copy()
+        timestamp = getattr(st.session_state, 'current_meeting_timestamp', 
+                          datetime.now().strftime("%Y%m%d_%H%M%S"))
         
-        if not evaluation_update:
-            if st.session_state.customer_model and st.session_state.evaluation_model:
-                eval_context = f"{st.session_state.customer_model}\n\n{st.session_state.evaluation_model}"
-                if MODEL_CONFIG["provider"] == "anthropic":
-                    # For Anthropic, use system parameter
-                    messages = messages[1:]  # Remove old system message
-                    config["system"] = eval_context
-                else:
-                    # For OpenAI, keep system message in messages
-                    messages = [{"role": "system", "content": eval_context}] + messages[1:]
-            else:
-                st.error("Customer model or evaluation model is missing")
-                return None
-
-        # Filter out any messages with null content
-        valid_messages = [
-            msg for msg in messages 
-            if msg.get("content") is not None and isinstance(msg["content"], str) and msg["content"].strip() != ""
-        ]
+        # Create a new evaluation filename for each meeting
+        evaluation_filename = f"vendor_evaluation_{profile_name}_{timestamp}.txt"
+        filepath = MEETINGS_DATA_DIR / evaluation_filename
         
-        if not valid_messages:
-            st.error("No valid messages to send")
-            return None
-        
-        if MODEL_CONFIG["provider"] == "anthropic":
-            # Convert OpenAI message format to Anthropic format
-            anthropic_messages = []
-            for msg in valid_messages:
-                if msg["role"] == "system":
-                    config["system"] = msg["content"]
-                else:
-                    anthropic_messages.append({
-                        "role": msg["role"],
-                        "content": msg["content"]
-                    })
+        # Write evaluation to a new file (not append mode)
+        with open(filepath, 'w') as f:
+            f.write(f"--- Meeting Evaluation {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n\n")
+            # Write all evaluations for this meeting
+            for i, eval_text in enumerate(st.session_state.evaluations, 1):
+                f.write(f"\n--- Evaluation #{i} ---\n")
+                f.write(eval_text)
+                f.write("\n")
             
-            response = client.messages.create(
-                messages=anthropic_messages,
-                **config
-            )
-            # Extract the text content from the response
-            return response.content[0].text if response.content else ""
-        else:
-            response = client.chat.completions.create(
-                messages=valid_messages,
-                **config
-            )
-            return response.choices[0].message.content
+        # Store the current evaluation filename
+        st.session_state.current_evaluation_filename = evaluation_filename
+        return evaluation_filename
     except Exception as e:
-        st.error(f"Error in API call: {str(e)}")
+        st.error(f"Error saving evaluation: {str(e)}")
         return None
-    
+
 def update_user_evaluation(messages):
-    """Update the ongoing evaluation of the user"""
-    eval_messages = messages.copy()
-    eval_messages.append({"role": "system", "content": st.session_state.evaluation_model})
+    """Update the ongoing evaluation of the vendor's response"""
+    # Get only the last vendor (user) message and customer (assistant) context
+    recent_vendor_message = next((msg for msg in reversed(messages) 
+                              if msg['role'] == 'user'), None)
+    
+    if not recent_vendor_message:
+        return
+    
+    # Get the previous customer message for context
+    previous_customer_message = next((msg for msg in reversed(messages[:-1]) 
+                           if msg['role'] == 'assistant'), None)
+    
+    context_message = (
+        f"Customer's previous message: {previous_customer_message['content']}\n\n" if previous_customer_message 
+        else "Initial vendor pitch:\n\n"
+    )
+    
+    eval_messages = [
+        {"role": "system", "content": st.session_state.evaluation_model},
+        {"role": "user", "content": (
+            f"{context_message}"
+            f"Vendor's response: {recent_vendor_message['content']}"
+        )}
+    ]
+    
     evaluation = get_chat_response(eval_messages, evaluation_update=True)
     if evaluation:
         st.session_state.evaluations.append(evaluation)
+        # Removed save_evaluation call here
 
 def generate_final_report():
     """Generate final report using all conversation data"""
     report_messages = st.session_state.messages.copy()
     report_context = f"{st.session_state.evaluation_model}\n\n{st.session_state.report_model}"
     report_messages.append({"role": "system", "content": report_context})
-    report_messages.append({"role": "user", "content": "Generate final evaluation report"})
+    report_messages.append({"role": "user", "content": "Generate final evaluation report of the vendor's performance"})
     return get_chat_response(report_messages)
 
 def save_report(report):
@@ -183,12 +218,52 @@ def save_report(report):
             return None
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"report_{st.session_state.customer_profile}_{timestamp}{REPORT_EXTENSION}"
-        filepath = MEETINGS_DIR / filename
+        filename = f"vendor_report_{st.session_state.customer_profile}_{timestamp}{REPORT_EXTENSION}"
+        filepath = MEETINGS_DATA_DIR / filename
         filepath.write_text(report)
         return filename
     except Exception as e:
         st.error(f"Error saving report: {str(e)}")
+        return None
+
+def get_chat_response(messages, evaluation_update=False):
+    """Get response from API"""
+    try:
+        # Initialize config first
+        config = MODEL_CONFIG["evaluation"].copy() if evaluation_update else MODEL_CONFIG["chat"].copy()
+        
+        # Extract model-specific parameters from config
+        model = config.pop("model")
+        temperature = config.pop("temperature")
+        max_tokens = config.pop("max_tokens")
+        
+        # Format messages for Anthropic API
+        anthropic_messages = []
+        system_prompt = None
+        
+        for msg in messages:
+            if msg["role"] == "system":
+                system_prompt = msg["content"]
+            else:
+                if msg.get("content") and isinstance(msg["content"], str) and msg["content"].strip():
+                    anthropic_messages.append({
+                        "role": "assistant" if msg["role"] == "assistant" else "user",
+                        "content": msg["content"]
+                    })
+        
+        # Create message with Anthropic's required parameters
+        response = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=system_prompt,
+            messages=anthropic_messages
+        )
+        
+        return response.content[0].text if response.content else ""
+        
+    except Exception as e:
+        st.error(f"Error in API call: {str(e)}")
         return None
 
 # Initialize Streamlit Session State
@@ -208,7 +283,7 @@ if st.session_state.initialized and st.session_state.customer_profile:
     st.title(f"Meeting with {st.session_state.customer_profile}")
     st.write(f"Last edit at {datetime.now().strftime('%Y-%m-%d')}")
 else:
-    st.title("Who do you want to meet?")
+    st.title("Which customer do you want to meet?")
 
 # Sidebar
 with st.sidebar:
@@ -227,20 +302,24 @@ with st.sidebar:
         st.session_state.customer_profile = None
         st.session_state.current_meeting_timestamp = None
         st.rerun()
-
+    
     st.header("Previous meetings")
     meetings = list_saved_meetings()
     
     if meetings:
         for i, meeting in enumerate(meetings):
-            timestamp = datetime.strptime(meeting['timestamp'], "%Y%m%d_%H%M%S")
-            formatted_time = timestamp.strftime("%Y-%m-%d")
+            timestamp_str = meeting['timestamp']
+            if timestamp_str:  # Only try to parse if timestamp exists
+                timestamp = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
+                formatted_time = timestamp.strftime("%Y-%m-%d")
+            else:
+                formatted_time = "No date"
             
             is_active = (st.session_state.initialized and 
-                        st.session_state.customer_profile == meeting['profile'] and
+                        st.session_state.customer_profile == meeting['customer_profile'] and
                         st.session_state.current_meeting_timestamp == meeting['timestamp'])
             
-            display_text = f"{meeting['profile']}, {formatted_time}"
+            display_text = f"{meeting['customer_profile']}, {formatted_time}"
             if is_active:
                 display_text = f"**{display_text}**"
             
@@ -251,16 +330,23 @@ with st.sidebar:
                 disabled=is_active
             ):
                 data = load_meeting(meeting['filename'])
-                st.session_state.messages = data['messages']
-                st.session_state.evaluations = data['evaluations']
-                st.session_state.customer_model = data['customer_model']
-                st.session_state.evaluation_model = data['evaluation_model']
-                st.session_state.report_model = data['report_model']
-                st.session_state.initialized = True
-                st.session_state.conversation_ended = False
-                st.session_state.customer_profile = meeting['profile']
-                st.session_state.current_meeting_timestamp = meeting['timestamp']
-                st.rerun()
+                if data:
+                    # Initialize system message
+                    st.session_state.messages = [{"role": "system", "content": data['customer_model']}]
+                    # Add conversation messages
+                    st.session_state.messages.extend([
+                        {"role": msg['role'], "content": msg['content']} 
+                        for msg in data['conversation']
+                    ])
+                    st.session_state.evaluations = data['vendor_evaluations']
+                    st.session_state.customer_model = data['customer_model']
+                    st.session_state.evaluation_model = data['evaluation_model']
+                    st.session_state.report_model = data['report_model']
+                    st.session_state.initialized = True
+                    st.session_state.conversation_ended = False
+                    st.session_state.customer_profile = meeting['customer_profile']
+                    st.session_state.current_meeting_timestamp = meeting['timestamp']
+                    st.rerun()
     else:
         st.write("No saved meetings yet.")
 
@@ -279,7 +365,7 @@ if not st.session_state.initialized:
         st.session_state.current_meeting_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         st.session_state.customer_model = read_prompt(selected_profile, is_customer=True)
-        st.session_state.evaluation_model = read_prompt('evaluation_model')
+        st.session_state.evaluation_model = read_prompt('response_evaluation_model')
         st.session_state.report_model = read_prompt('report_model')
         
         st.session_state.messages = [
@@ -295,28 +381,39 @@ for message in st.session_state.messages:
             st.write(message["content"])
 
 if not st.session_state.conversation_ended:
-    user_input = st.chat_input("Make your pitch...")
+    user_input = st.chat_input("Make your pitch to the customer...")
     
     if user_input:
+        # Vendor's message
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.write(user_input)
+            
+        # Evaluate vendor's response from customer's perspective
+        update_user_evaluation(st.session_state.messages)
 
         if user_input.lower().strip() == "freeze and report":
             final_report = generate_final_report()
             if final_report:
                 filename = save_report(final_report)
-                meeting_filename = save_meeting(st.session_state.customer_profile)
+                # Save the final state of the meeting and evaluation
+                save_meeting(st.session_state.customer_profile)
+                save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
                 with st.chat_message("assistant"):
-                    st.write("Final Evaluation Report:")
+                    st.write("Final Evaluation Report of Vendor's Performance:")
                     st.write(final_report)
                     st.write(f"\nReport saved to: {filename}")
-                    st.write(f"Meeting saved to: {meeting_filename}")
+                    st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
+                    st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")
             st.session_state.conversation_ended = True
         else:
+            # Customer's response
             response = get_chat_response(st.session_state.messages)
             if response:
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                update_user_evaluation(st.session_state.messages)
                 with st.chat_message("assistant"):
                     st.write(response)
+                
+                # Save meeting and evaluation together
+                save_meeting(st.session_state.customer_profile)
+                save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
