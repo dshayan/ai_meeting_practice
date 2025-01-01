@@ -1,6 +1,7 @@
 # Imports
 import os
 from pathlib import Path
+import streamlit as st
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,7 +25,14 @@ MEETING_EXTENSION = ".json"
 REPORT_EXTENSION = ".txt"
 
 # API Key
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+ANTHROPIC_API_KEY = (
+    st.secrets.get("ANTHROPIC_API_KEY") or  # Streamlit Cloud secrets
+    os.getenv("ANTHROPIC_API_KEY") or       # Local .env file
+    None
+)
+if not ANTHROPIC_API_KEY:
+    st.error("ANTHROPIC_API_KEY not found. Please add it to your .env file locally or Streamlit secrets in cloud.")
+    st.stop()
 
 # Model configurations
 MODEL_CONFIG = {
@@ -46,6 +54,3 @@ MODEL_CONFIG = {
         "max_tokens": 2000
     }
 }
-
-if not ANTHROPIC_API_KEY:
-    raise ValueError("ANTHROPIC_API_KEY not found in .env file")
