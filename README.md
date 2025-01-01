@@ -1,4 +1,4 @@
-# Momentum - AI Conversation Practice
+# AI Conversation Practice
 
 An AI-powered platform for practicing conversations with realistic personas using Claude AI. Perfect for sales, interviews, negotiations, or any professional interaction.
 
