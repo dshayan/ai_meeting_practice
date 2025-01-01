@@ -26,8 +26,8 @@ An AI-powered platform for practicing conversations with realistic personas usin
 
 - `meetings_data/` - Saved conversations and evaluations
   - `meeting_with_*.json` - Complete conversation records
-  - `vendor_evaluation_*.txt` - Detailed response evaluations
-  - `vendor_report_*.txt` - Final evaluation reports
+  - `response_evaluation_*.txt` - Detailed response evaluations
+  - `meeting_evaluation_*.txt` - Meeting evaluation reports
 - `prompts/` - System prompts and evaluation templates
 - `customers/` - Customer profile definitions
 - `core/` - Core application components
