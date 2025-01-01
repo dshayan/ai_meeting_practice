@@ -34,12 +34,12 @@ MODEL_CONFIG = {
         "temperature": 0.8,
         "max_tokens": 500
     },
-    "evaluation": {
+    "response_evaluation": {
         "model": "claude-3-5-sonnet-latest",
         "temperature": 1.0,
         "max_tokens": 1000
     },
-    "report": {
+    "meeting_evaluation": {
         "model": "claude-3-5-sonnet-latest",
         "temperature": 1.0,
         "max_tokens": 2000

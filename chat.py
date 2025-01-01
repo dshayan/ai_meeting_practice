@@ -128,9 +128,9 @@ def save_meeting(profile_name):
             'vendor_evaluations': st.session_state.evaluations,
             'meeting_start': timestamp,
             'customer_model': st.session_state.customer_model,
-            'evaluation_model': st.session_state.evaluation_model,
-            'report_model': st.session_state.report_model
-        }
+            'response_evaluation_model': st.session_state.response_evaluation_model,
+            'meeting_evaluation_model': st.session_state.meeting_evaluation_model  # Changed from report_model
+}
         
         # Use the same timestamp for filename
         filename = f"meeting_with_{profile_name}_{timestamp}{MEETING_EXTENSION}"
@@ -172,16 +172,14 @@ def save_evaluation(evaluation, profile_name):
         st.error(f"Error saving evaluation: {str(e)}")
         return None
 
-def update_user_evaluation(messages):
+def update_response_evaluation(messages):
     """Update the ongoing evaluation of the vendor's response"""
-    # Get only the last vendor (user) message and customer (assistant) context
     recent_vendor_message = next((msg for msg in reversed(messages) 
                               if msg['role'] == 'user'), None)
     
     if not recent_vendor_message:
         return
     
-    # Get the previous customer message for context
     previous_customer_message = next((msg for msg in reversed(messages[:-1]) 
                            if msg['role'] == 'assistant'), None)
     
@@ -191,25 +189,30 @@ def update_user_evaluation(messages):
     )
     
     eval_messages = [
-        {"role": "system", "content": st.session_state.evaluation_model},
+        {"role": "system", "content": st.session_state.response_evaluation_model},
         {"role": "user", "content": (
             f"{context_message}"
             f"Vendor's response: {recent_vendor_message['content']}"
         )}
     ]
     
-    evaluation = get_chat_response(eval_messages, evaluation_update=True)
+    evaluation = get_chat_response(eval_messages, mode="response_evaluation")
     if evaluation:
         st.session_state.evaluations.append(evaluation)
-        # Removed save_evaluation call here
 
-def generate_final_report():
-    """Generate final report using all conversation data"""
-    report_messages = st.session_state.messages.copy()
-    report_context = f"{st.session_state.evaluation_model}\n\n{st.session_state.report_model}"
-    report_messages.append({"role": "system", "content": report_context})
-    report_messages.append({"role": "user", "content": "Generate final evaluation report of the vendor's performance"})
-    return get_chat_response(report_messages)
+def generate_meeting_evaluation():
+    """Generate meeting evaluation using all conversation data"""
+    conversation_messages = [msg for msg in st.session_state.messages if msg["role"] != "system"]
+    
+    report_messages = [
+        {
+            "role": "system", 
+            "content": f"{st.session_state.customer_model}\n{st.session_state.meeting_evaluation_model}"
+        }
+    ]
+    report_messages.extend(conversation_messages)
+    
+    return get_chat_response(report_messages, mode="meeting_evaluation")
 
 def save_report(report):
     """Save report to file"""
@@ -226,38 +229,30 @@ def save_report(report):
         st.error(f"Error saving report: {str(e)}")
         return None
 
-def get_chat_response(messages, evaluation_update=False):
-    """Get response from API"""
+def get_chat_response(messages, mode="chat"):
+    """Get response from API
+    Args:
+        messages: List of message dictionaries
+        mode: One of "chat", "response_evaluation", or "meeting_evaluation"
+    """
     try:
-        # Initialize config first
-        config = MODEL_CONFIG["evaluation"].copy() if evaluation_update else MODEL_CONFIG["chat"].copy()
-        
-        # Extract model-specific parameters from config
-        model = config.pop("model")
-        temperature = config.pop("temperature")
-        max_tokens = config.pop("max_tokens")
-        
-        # Format messages for Anthropic API
-        anthropic_messages = []
-        system_prompt = None
-        
-        for msg in messages:
-            if msg["role"] == "system":
-                system_prompt = msg["content"]
-            else:
-                if msg.get("content") and isinstance(msg["content"], str) and msg["content"].strip():
-                    anthropic_messages.append({
-                        "role": "assistant" if msg["role"] == "assistant" else "user",
-                        "content": msg["content"]
-                    })
+        # Initialize config based on the calling function
+        config = MODEL_CONFIG[mode].copy()
         
         # Create message with Anthropic's required parameters
         response = client.messages.create(
-            model=model,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            system=system_prompt,
-            messages=anthropic_messages
+            model=config["model"],
+            max_tokens=config["max_tokens"],
+            temperature=config["temperature"],
+            system=next((msg["content"] for msg in messages if msg["role"] == "system"), ""),
+            messages=[
+                {
+                    "role": "assistant" if msg["role"] == "assistant" else "user",
+                    "content": msg["content"]
+                }
+                for msg in messages 
+                if msg["role"] != "system" and msg.get("content") and isinstance(msg["content"], str)
+            ]
         )
         
         return response.content[0].text if response.content else ""
@@ -275,8 +270,8 @@ if "initialized" not in st.session_state:
     st.session_state.customer_profile = None
     st.session_state.current_meeting_timestamp = None
     st.session_state.customer_model = None
-    st.session_state.evaluation_model = None
-    st.session_state.report_model = None
+    st.session_state.response_evaluation_model = None
+    st.session_state.meeting_evaluation_model = None
 
 # Main UI - Title Section
 if st.session_state.initialized and st.session_state.customer_profile:
@@ -340,8 +335,8 @@ with st.sidebar:
                     ])
                     st.session_state.evaluations = data['vendor_evaluations']
                     st.session_state.customer_model = data['customer_model']
-                    st.session_state.evaluation_model = data['evaluation_model']
-                    st.session_state.report_model = data['report_model']
+                    st.session_state.response_evaluation_model = data['response_evaluation_model']
+                    st.session_state.meeting_evaluation_model = data.get('meeting_evaluation_model', data.get('report_model', ''))  # Handle both old and new format
                     st.session_state.initialized = True
                     st.session_state.conversation_ended = False
                     st.session_state.customer_profile = meeting['customer_profile']
@@ -365,8 +360,8 @@ if not st.session_state.initialized:
         st.session_state.current_meeting_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         st.session_state.customer_model = read_prompt(selected_profile, is_customer=True)
-        st.session_state.evaluation_model = read_prompt('response_evaluation_model')
-        st.session_state.report_model = read_prompt('report_model')
+        st.session_state.response_evaluation_model = read_prompt('response_evaluation_model')
+        st.session_state.meeting_evaluation_model = read_prompt('meeting_evaluation_model')
         
         st.session_state.messages = [
             {"role": "system", "content": st.session_state.customer_model}
@@ -381,7 +376,7 @@ for message in st.session_state.messages:
             st.write(message["content"])
 
 if not st.session_state.conversation_ended:
-    user_input = st.chat_input("Make your pitch to the customer...")
+    user_input = st.chat_input("Make your pitch ...")
     
     if user_input:
         # Vendor's message
@@ -390,18 +385,17 @@ if not st.session_state.conversation_ended:
             st.write(user_input)
             
         # Evaluate vendor's response from customer's perspective
-        update_user_evaluation(st.session_state.messages)
+        update_response_evaluation(st.session_state.messages)
 
         if user_input.lower().strip() == "freeze and report":
-            final_report = generate_final_report()
-            if final_report:
-                filename = save_report(final_report)
+            meeting_evaluation = generate_meeting_evaluation()
+            if meeting_evaluation:
+                filename = save_report(meeting_evaluation)
                 # Save the final state of the meeting and evaluation
                 save_meeting(st.session_state.customer_profile)
                 save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
                 with st.chat_message("assistant"):
-                    st.write("Final Evaluation Report of Vendor's Performance:")
-                    st.write(final_report)
+                    st.write(meeting_evaluation)
                     st.write(f"\nReport saved to: {filename}")
                     st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
                     st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")

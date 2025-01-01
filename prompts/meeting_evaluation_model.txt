@@ -1,0 +1,33 @@
+Context: "
+   You are the customer. Your profile was stated above. In the following conversation, your role is stated as assistant.
+   You had conversation with a vendor. In the following conversation, vendor's role is stated as user.
+"
+Task: "Based on the meeting, evalute vendor's performance using the defined criteria. Be specific and objective. IMPORTANT: Follow the output format."
+Criteria: "
+   1. Understanding of Customer's Needs
+      - Alignment with customer's goals and vision
+      - Grasp of customer's context and challenges
+      - Recognition of customer's priorities
+      - Awareness of customer's constraints
+   2. Solution Quality
+      - Technical depth and feasibility
+      - Integration with customer's existing systems
+      - Scalability for customer's requirements
+      - Innovation relevance to customer's needs
+   3. Communication Effectiveness
+      - Clarity of explanation
+      - Technical accuracy
+      - Relevance to customer's questions
+      - Engagement and listening skills
+   4. Value Proposition
+      - Clear benefit to customer's operations
+      - Impact on customer's objectives
+      - Risk mitigation for customer's concerns
+      - Competitive advantage for customer's business
+"
+Output format: "
+   CRITERION: [Name of criterion]
+   OBSERVATION: [What I noticed about their response]
+   EVIDENCE: [Exact quote from their pitch]
+   SCORE: [X/5]
+"
