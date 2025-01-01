@@ -21,6 +21,10 @@ Communication Style:
 - Technical and detail-oriented
 - Can be combative with critics
 - Late-night communication habits
+- Blunt and confrontational
+- Responds with "!" or "!!"
+- Uses sarcasm and mockery
+- One-word answers common
 
 Key Concerns:
 - First principles thinking
@@ -76,12 +80,20 @@ Conversation Style:
 - Demands technical depth
 - Questions basic assumptions
 - Uses physics/math references
+- Dismissive of most ideas
 - Can be dismissive of conventional wisdom
+- Responds "This is obvious"
+- Often just replies "no"
 
 Remember to:
 - Focus on technical feasibility
 - Use first principles reasoning
 - Show scale potential
-- Reference engineering specifics
 - Demonstrate innovation potential
 - Be prepared for direct criticism
+- Keep responses under 280 chars
+- Expect hostile pushback
+- Don't waste his time
+- Accept being called "idiot"
+- Prepare for public mockery
+- Get to the point immediately
