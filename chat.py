@@ -3,9 +3,10 @@ import json
 from datetime import datetime
 import streamlit as st
 from anthropic import Anthropic
+from core.strings import *
 
 # Import config
-from config import (
+from core.config import (
     MODEL_CONFIG,
     MEETINGS_DATA_DIR,
     PROMPTS_DIR,
@@ -14,6 +15,7 @@ from config import (
     MEETING_EXTENSION,
     REPORT_EXTENSION
 )
+from core.strings import *
 
 # Initialize Anthropic client
 client = Anthropic(api_key=MODEL_CONFIG["api_key"])
@@ -24,7 +26,7 @@ def list_customer_profiles():
     profiles = []
     # Check if directory exists
     if not CUSTOMERS_DIR.exists():
-        st.error(f"Customers directory not found: {CUSTOMERS_DIR}")
+        st.error(CUSTOMERS_DIR_ERROR.format(CUSTOMERS_DIR))
         return profiles
         
     # List all files in directory
@@ -40,7 +42,7 @@ def read_prompt(filename, is_customer=False):
         path = CUSTOMERS_DIR / f"{filename}{PROFILE_EXTENSION}" if is_customer else PROMPTS_DIR / f"{filename}{PROFILE_EXTENSION}"
         return path.read_text().strip()
     except FileNotFoundError:
-        st.error(f"Prompt file not found: {path}")
+        st.error(PROMPT_FILE_ERROR.format(path))
         return ""
 
 def list_saved_meetings():
@@ -54,14 +56,14 @@ def list_saved_meetings():
                     meetings.append({
                         'filename': file.name,
                         'customer_profile': data.get('customer_profile', 'Unknown Customer'),
-                        'timestamp': data.get('meeting_start', '')  # Changed from 'timestamp' to 'meeting_start'
+                        'timestamp': data.get('meeting_start', '')
                     })
                 except json.JSONDecodeError:
-                    st.error(f"Error reading meeting file: {file}")
+                    st.error(MEETING_FILE_ERROR.format(file))
                     continue
         return sorted(meetings, key=lambda x: x['timestamp'], reverse=True)
     except Exception as e:
-        st.error(f"Error listing meetings: {str(e)}")
+        st.error(MEETINGS_LIST_ERROR.format(str(e)))
         return []
 
 def load_meeting(filename):
@@ -69,7 +71,7 @@ def load_meeting(filename):
     try:
         filepath = MEETINGS_DATA_DIR / filename
         if not filepath.exists():
-            st.error(f"Meeting file not found: {filepath}")
+            st.error(MEETING_LOAD_ERROR.format(filepath))
             return None
         
         data = json.loads(filepath.read_text())
@@ -102,7 +104,7 @@ def load_meeting(filename):
             
         return data
     except Exception as e:
-        st.error(f"Error loading meeting: {str(e)}")
+        st.error(MEETING_LOAD_ERROR.format(str(e)))
         return None
 
 def save_meeting(profile_name):
@@ -129,11 +131,11 @@ def save_meeting(profile_name):
             'meeting_start': timestamp,
             'customer_model': st.session_state.customer_model,
             'response_evaluation_model': st.session_state.response_evaluation_model,
-            'meeting_evaluation_model': st.session_state.meeting_evaluation_model  # Changed from report_model
-}
+            'meeting_evaluation_model': st.session_state.meeting_evaluation_model
+        }
         
         # Use the same timestamp for filename
-        filename = f"meeting_with_{profile_name}_{timestamp}{MEETING_EXTENSION}"
+        filename = MEETING_FILENAME.format(profile_name, timestamp, MEETING_EXTENSION)
         filepath = MEETINGS_DATA_DIR / filename
         filepath.write_text(json.dumps(meeting_data, indent=2))
         
@@ -143,7 +145,7 @@ def save_meeting(profile_name):
         
         return filename
     except Exception as e:
-        st.error(f"Error saving meeting: {str(e)}")
+        st.error(MEETING_SAVE_ERROR.format(str(e)))
         return None
 
 def save_evaluation(evaluation, profile_name):
@@ -153,15 +155,15 @@ def save_evaluation(evaluation, profile_name):
                           datetime.now().strftime("%Y%m%d_%H%M%S"))
         
         # Create a new evaluation filename for each meeting
-        evaluation_filename = f"vendor_evaluation_{profile_name}_{timestamp}.txt"
+        evaluation_filename = EVALUATION_FILENAME.format(profile_name, timestamp)
         filepath = MEETINGS_DATA_DIR / evaluation_filename
         
         # Write evaluation to a new file (not append mode)
         with open(filepath, 'w') as f:
-            f.write(f"--- Meeting Evaluation {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n\n")
+            f.write(EVALUATION_HEADER.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             # Write all evaluations for this meeting
             for i, eval_text in enumerate(st.session_state.evaluations, 1):
-                f.write(f"\n--- Evaluation #{i} ---\n")
+                f.write(EVALUATION_SECTION.format(i))
                 f.write(eval_text)
                 f.write("\n")
             
@@ -169,7 +171,7 @@ def save_evaluation(evaluation, profile_name):
         st.session_state.current_evaluation_filename = evaluation_filename
         return evaluation_filename
     except Exception as e:
-        st.error(f"Error saving evaluation: {str(e)}")
+        st.error(EVALUATION_SAVE_ERROR.format(str(e)))
         return None
 
 def update_response_evaluation(messages):
@@ -221,12 +223,12 @@ def save_report(report):
             return None
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"vendor_report_{st.session_state.customer_profile}_{timestamp}{REPORT_EXTENSION}"
+        filename = REPORT_FILENAME.format(st.session_state.customer_profile, timestamp, REPORT_EXTENSION)
         filepath = MEETINGS_DATA_DIR / filename
         filepath.write_text(report)
         return filename
     except Exception as e:
-        st.error(f"Error saving report: {str(e)}")
+        st.error(MEETING_SAVE_ERROR.format(str(e)))
         return None
 
 def get_chat_response(messages, mode="chat"):
@@ -258,7 +260,7 @@ def get_chat_response(messages, mode="chat"):
         return response.content[0].text if response.content else ""
         
     except Exception as e:
-        st.error(f"Error in API call: {str(e)}")
+        st.error(API_CALL_ERROR.format(str(e)))
         return None
 
 # Initialize Streamlit Session State
@@ -275,18 +277,18 @@ if "initialized" not in st.session_state:
 
 # Main UI - Title Section
 if st.session_state.initialized and st.session_state.customer_profile:
-    st.title(f"Meeting with {st.session_state.customer_profile}")
+    st.title(TITLE_WITH_CUSTOMER.format(st.session_state.customer_profile))
     st.write(f"Last edit at {datetime.now().strftime('%Y-%m-%d')}")
 else:
-    st.title("Which customer do you want to meet?")
+    st.title(TITLE_DEFAULT)
 
 # Sidebar
 with st.sidebar:
-    st.header("Momentum")
-    st.write("Customer Meeting Simulator")
+    st.header(SIDEBAR_HEADER)
+    st.write(SIDEBAR_SUBHEADER)
     st.markdown("---")
     
-    if st.button("New meeting", use_container_width=True, key="new_meeting_button"):
+    if st.button(NEW_MEETING_BUTTON, use_container_width=True, key="new_meeting_button"):
         if st.session_state.initialized and len(st.session_state.messages) > 1:
             save_meeting(st.session_state.customer_profile)
         
@@ -298,7 +300,7 @@ with st.sidebar:
         st.session_state.current_meeting_timestamp = None
         st.rerun()
     
-    st.header("Previous meetings")
+    st.header(PREVIOUS_MEETINGS_HEADER)
     meetings = list_saved_meetings()
     
     if meetings:
@@ -336,26 +338,26 @@ with st.sidebar:
                     st.session_state.evaluations = data['vendor_evaluations']
                     st.session_state.customer_model = data['customer_model']
                     st.session_state.response_evaluation_model = data['response_evaluation_model']
-                    st.session_state.meeting_evaluation_model = data.get('meeting_evaluation_model', data.get('report_model', ''))  # Handle both old and new format
+                    st.session_state.meeting_evaluation_model = data.get('meeting_evaluation_model', data.get('report_model', ''))
                     st.session_state.initialized = True
                     st.session_state.conversation_ended = False
                     st.session_state.customer_profile = meeting['customer_profile']
                     st.session_state.current_meeting_timestamp = meeting['timestamp']
                     st.rerun()
     else:
-        st.write("No saved meetings yet.")
+        st.write(NO_SAVED_MEETINGS)
 
 # Customer Profile Selection
 if not st.session_state.initialized:
     profiles = list_customer_profiles()
     selected_profile = st.selectbox(
-        "Select a customer",
+        SELECT_CUSTOMER_PROMPT,
         profiles,
         format_func=lambda x: x,
         label_visibility="collapsed"
     )
     
-    if st.button("Start meeting"):
+    if st.button(START_MEETING_BUTTON):
         st.session_state.customer_profile = selected_profile
         st.session_state.current_meeting_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
@@ -376,7 +378,7 @@ for message in st.session_state.messages:
             st.write(message["content"])
 
 if not st.session_state.conversation_ended:
-    user_input = st.chat_input("Make your pitch ...")
+    user_input = st.chat_input(CHAT_INPUT_PLACEHOLDER)
     
     if user_input:
         # Vendor's message
@@ -387,7 +389,7 @@ if not st.session_state.conversation_ended:
         # Evaluate vendor's response from customer's perspective
         update_response_evaluation(st.session_state.messages)
 
-        if user_input.lower().strip() == "freeze and report":
+        if user_input.lower().strip() == FREEZE_COMMAND:
             meeting_evaluation = generate_meeting_evaluation()
             if meeting_evaluation:
                 filename = save_report(meeting_evaluation)

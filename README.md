@@ -30,6 +30,9 @@ An AI-powered platform for practicing conversations with realistic personas usin
   - `vendor_report_*.txt` - Final evaluation reports
 - `prompts/` - System prompts and evaluation templates
 - `customers/` - Customer profile definitions
+- `core/` - Core application components
+  - `config.py` - Configuration and environment settings
+  - `strings.py` - Application string constants
 
 ## Creating Custom Profiles
 

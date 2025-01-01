@@ -4,10 +4,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
 
 # Base paths
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 MEETINGS_DATA_DIR = BASE_DIR / "meetings_data"
 PROMPTS_DIR = BASE_DIR / "prompts"
 CUSTOMERS_DIR = BASE_DIR / "customers"
