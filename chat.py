@@ -288,6 +288,9 @@ with st.sidebar:
     st.write(SIDEBAR_SUBHEADER)
     st.markdown("---")
     
+    if st.button(CREATE_PROFILE_BUTTON, use_container_width=True):
+        st.switch_page("pages/create_profile.py")
+
     if st.button(NEW_MEETING_BUTTON, use_container_width=True, key="new_meeting_button"):
         if st.session_state.initialized and len(st.session_state.messages) > 1:
             save_meeting(st.session_state.customer_profile)
@@ -300,6 +303,7 @@ with st.sidebar:
         st.session_state.current_meeting_timestamp = None
         st.rerun()
     
+    st.markdown("---")
     st.header(PREVIOUS_MEETINGS_HEADER)
     meetings = list_saved_meetings()
     

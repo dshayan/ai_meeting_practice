@@ -1,15 +1,24 @@
 # UI Strings
 TITLE_WITH_CUSTOMER = "Meeting with {}"
-TITLE_DEFAULT = "Which customer do you want to meet?"
+TITLE_DEFAULT = "Select a customer to meet"
 SIDEBAR_HEADER = "Momentum"
 SIDEBAR_SUBHEADER = "Customer Meeting Simulator"
-NEW_MEETING_BUTTON = "New meeting"
+CREATE_PROFILE_BUTTON = "Create customer profile →"
+NEW_MEETING_BUTTON = "Meet the customer →"
 PREVIOUS_MEETINGS_HEADER = "Previous meetings"
 NO_SAVED_MEETINGS = "No saved meetings yet."
 SELECT_CUSTOMER_PROMPT = "Select a customer"
 START_MEETING_BUTTON = "Start meeting"
 CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
 FREEZE_COMMAND = "freeze and report"
+
+# Create Profile Page Strings
+CREATE_PROFILE_TITLE = "Create customer profile"
+PROFILE_DESCRIPTION_PLACEHOLDER = "Describe your customer ..."
+SAVE_PROFILE_HEADER = "Save profile"
+PROFILE_NAME_LABEL = "Profile name"
+CREATE_NEW_PROFILE_BUTTON = "Create new profile"
+SAVE_PROFILE_BUTTON = "Save profile"
 
 # Error Messages
 CUSTOMERS_DIR_ERROR = "Customers directory not found: {}"
@@ -20,6 +29,11 @@ MEETING_LOAD_ERROR = "Meeting file not found: {}"
 MEETING_SAVE_ERROR = "Error saving meeting: {}"
 EVALUATION_SAVE_ERROR = "Error saving evaluation: {}"
 API_CALL_ERROR = "Error in API call: {}"
+PROFILE_NAME_REQUIRED = "Please enter a profile name"
+NO_COMPLETE_PROFILE = "No complete profile found. Please continue the conversation until a full profile is generated."
+PROFILE_CREATION_PROMPT_ERROR = "Customer creation prompt not found: {}"
+PROFILE_SAVE_ERROR = "Error saving profile: {}"
+PROFILE_SAVE_SUCCESS = "Profile '{}' saved successfully!"
 
 # File Templates
 EVALUATION_HEADER = "--- Meeting Evaluation {} ---\n\n"
