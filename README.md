@@ -4,11 +4,10 @@ An AI-powered platform for practicing conversations with realistic personas usin
 
 ## Features
 
-- Practice conversations with AI-powered customer personas
 - Create custom customer profiles through guided conversation
+- Practice conversations with AI-powered customer personas
 - Real-time response evaluation from the customer's perspective
 - Detailed meeting reports with scoring across multiple criteria
-- Automatic saving of conversations and evaluations
 - Review past meetings and performance history
 
 ## Usage
@@ -30,29 +29,20 @@ An AI-powered platform for practicing conversations with realistic personas usin
   - `response_evaluation_model.txt` - Response evaluation criteria
   - `meeting_evaluation_model.txt` - Final report generation template
 - `customers/` - Customer profile definitions
+  - `*.txt` - Individual customer profile files
 - `core/` - Core application components
   - `config.py` - Configuration and environment settings
   - `strings.py` - Application string constants
+- `pages/` - Streamlit application pages
+  - `create_profile.py` - Customer profile creation interface
+- `chat.py` - Main chat interface
+- `requirements.txt` - Python package dependencies
+- `.env` - Environment variables and API keys
 
 ## Creating Custom Profiles
 
-You can create new customer profiles in two ways:
-
-1. Using the UI (Recommended):
-   - Click "Create customer profile" in the sidebar
-   - Engage in a guided conversation about your customer
-   - The AI will ask relevant questions to build a complete profile
-   - Save the profile when complete
-
-2. Manually:
-   Add new profiles in the `customers` directory as `.txt` files with:
-   - Background information
-   - Communication style
-   - Key concerns
-   - Decision-making factors
-   - Personality traits
-   - Success metrics
-   - Red flags
+1. UI Method: Use "Create customer profile" in sidebar for guided profile creation
+2. Manual Method: Add `.txt` files to `customers` directory with customer details
 
 ## Setup
 
