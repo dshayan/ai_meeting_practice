@@ -15,7 +15,6 @@ from core.config import (
     MEETING_EXTENSION,
     REPORT_EXTENSION
 )
-from core.strings import *
 
 # Initialize Anthropic client
 client = Anthropic(api_key=MODEL_CONFIG["api_key"])
@@ -393,44 +392,48 @@ if not st.session_state.initialized:
         st.rerun()
 
 # Chat Interface
-for message in st.session_state.messages:
-    if message["role"] != "system":
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+if st.session_state.initialized:
+    for message in st.session_state.messages:
+        if message["role"] != "system":
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
 
-if not st.session_state.conversation_ended:
-    user_input = st.chat_input(CHAT_INPUT_PLACEHOLDER)
-    
-    if user_input:
-        # Vendor's message
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.write(user_input)
-            
-        # Evaluate vendor's response from customer's perspective
-        update_response_evaluation(st.session_state.messages)
-
-        if user_input.lower().strip() == FREEZE_COMMAND:
-            meeting_evaluation = generate_meeting_evaluation()
-            if meeting_evaluation:
-                filename = save_report(meeting_evaluation)
-                # Save the final state of the meeting and evaluation
-                save_meeting(st.session_state.customer_profile)
-                save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
-                with st.chat_message("assistant"):
-                    st.write(meeting_evaluation)
-                    st.write(f"\nReport saved to: {filename}")
-                    st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
-                    st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")
-            st.session_state.conversation_ended = True
-        else:
-            # Customer's response
-            response = get_chat_response(st.session_state.messages)
-            if response:
-                st.session_state.messages.append({"role": "assistant", "content": response})
-                with st.chat_message("assistant"):
-                    st.write(response)
+    # Only show chat input if conversation hasn't ended
+    if not st.session_state.conversation_ended:
+        user_input = st.chat_input(CHAT_INPUT_PLACEHOLDER)
+        
+        if user_input:
+            # Vendor's message
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            with st.chat_message("user"):
+                st.write(user_input)
                 
-                # Save meeting and evaluation together
-                save_meeting(st.session_state.customer_profile)
-                save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
+            # Evaluate vendor's response from customer's perspective
+            update_response_evaluation(st.session_state.messages)
+
+            if user_input.lower().strip() == FREEZE_COMMAND:
+                meeting_evaluation = generate_meeting_evaluation()
+                if meeting_evaluation:
+                    filename = save_report(meeting_evaluation)
+                    # Save the final state of the meeting and evaluation
+                    save_meeting(st.session_state.customer_profile)
+                    if st.session_state.evaluations:  # Check if there are any evaluations
+                        save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
+                    with st.chat_message("assistant"):
+                        st.write(meeting_evaluation)
+                        st.write(f"\nReport saved to: {filename}")
+                        st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
+                        st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")
+                st.session_state.conversation_ended = True
+            else:
+                # Customer's response
+                response = get_chat_response(st.session_state.messages)
+                if response:
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                    with st.chat_message("assistant"):
+                        st.write(response)
+                    
+                    # Save meeting and evaluation together
+                    save_meeting(st.session_state.customer_profile)
+                    if st.session_state.evaluations:  # Check if there are any evaluations
+                        save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
