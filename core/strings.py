@@ -1,7 +1,7 @@
 # UI Strings
 TITLE_WITH_CUSTOMER = "Meeting with {}"
 TITLE_DEFAULT = "Select a customer to meet"
-SIDEBAR_HEADER = "Pitch Perfect"
+SIDEBAR_HEADER = "Pitch Perfect 🎯"
 SIDEBAR_SUBHEADER = "AI Conversation Practice"
 CREATE_PROFILE_BUTTON = "Create customer profile →"
 NEW_MEETING_BUTTON = "Meet the customer →"
