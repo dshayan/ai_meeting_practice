@@ -204,15 +204,29 @@ def update_response_evaluation(messages):
 
 def generate_meeting_evaluation():
     """Generate meeting evaluation using all conversation data"""
-    conversation_messages = [msg for msg in st.session_state.messages if msg["role"] != "system"]
+
+    vendor_messages = [
+        msg for msg in st.session_state.messages 
+        if msg["role"] == "user"
+    ]
     
     report_messages = [
         {
             "role": "system", 
-            "content": f"{st.session_state.customer_model}\n{st.session_state.meeting_evaluation_model}"
+            "content": st.session_state.meeting_evaluation_model
         }
     ]
-    report_messages.extend(conversation_messages)
+    
+    report_messages.append({
+        "role": "user",
+        "content": f"Customer Context:\n{st.session_state.customer_model}\n\nVendor Messages to Evaluate:"
+    })
+    
+    for msg in vendor_messages:
+        report_messages.append({
+            "role": "user",
+            "content": msg["content"]
+        })
     
     return get_chat_response(report_messages, mode="meeting_evaluation")
 
@@ -370,7 +384,10 @@ if not st.session_state.initialized:
         st.session_state.meeting_evaluation_model = read_prompt('meeting_evaluation_model')
         
         st.session_state.messages = [
-            {"role": "system", "content": st.session_state.customer_model}
+            {"role": "system", "content": (
+                read_prompt('customer_role_model') + "\n\n" +
+                st.session_state.customer_model
+            )}
         ]
         st.session_state.initialized = True
         st.rerun()

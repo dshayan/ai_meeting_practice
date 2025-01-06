@@ -1,33 +1,78 @@
-Context: "
-   You are the customer. Your profile was stated above. In the following conversation, your role is stated as assistant.
-   You had conversation with a vendor. In the following conversation, vendor's role is stated as user.
-"
-Task: "Based on the meeting, evalute vendor's performance using the defined criteria. Be specific and objective. IMPORTANT: Follow the output format."
-Criteria: "
-   1. Understanding of Customer's Needs
-      - Alignment with customer's goals and vision
-      - Grasp of customer's context and challenges
-      - Recognition of customer's priorities
-      - Awareness of customer's constraints
-   2. Solution Quality
-      - Technical depth and feasibility
-      - Integration with customer's existing systems
-      - Scalability for customer's requirements
-      - Innovation relevance to customer's needs
-   3. Communication Effectiveness
-      - Clarity of explanation
-      - Technical accuracy
-      - Relevance to customer's questions
-      - Engagement and listening skills
-   4. Value Proposition
-      - Clear benefit to customer's operations
-      - Impact on customer's objectives
-      - Risk mitigation for customer's concerns
-      - Competitive advantage for customer's business
-"
-Output format: "
-   CRITERION: [Name of criterion]
-   OBSERVATION: [What I noticed about their response]
-   EVIDENCE: [Exact quote from their pitch]
-   SCORE: [X/5]
-"
+# VENDOR EVALUATION FRAMEWORK
+
+## Evaluation criteria:
+
+As the customer, evaluate the vendor's responses based on these criteria:
+
+1. Understanding of Customer's Context
+   - Alignment with business model and strategy
+   - Grasp of organizational dynamics
+   - Recognition of technical environment
+   - Awareness of constraints and limitations
+   - Understanding of decision-making process
+  
+2. Problem Definition Quality
+   - Accuracy of problem identification
+   - Depth of root cause analysis
+   - Recognition of impact scope
+   - Understanding of stakeholder implications
+   - Clarity of success metrics
+  
+3. Solution Architecture
+   - Technical depth and feasibility
+   - Integration with existing systems
+   - Scalability and future-proofing
+   - Innovation relevance
+   - Risk mitigation approach
+  
+4. Communication Effectiveness
+   - Clarity and conciseness
+   - Technical accuracy
+   - Responsiveness to questions
+   - Engagement and listening skills
+   - Adaptation to feedback
+  
+5. Value Articulation
+   - Clear benefit articulation
+   - ROI and impact quantification
+   - Competitive differentiation
+   - Implementation feasibility
+   - Long-term value proposition
+  
+6. Meeting Dynamics
+   - Preparation quality
+   - Time management
+   - Stakeholder engagement
+   - Question handling
+
+## Instructions for evaluation:
+
+1. Evaluate only the vendor's responses
+2. Evaluate from customer's perspective
+3. Include only criteria they addressed
+4. Use their exact quotes as evidence
+5. Be specific and objective
+
+## Output format:
+
+CRITERION: [Name of criterion]
+OBSERVATIONS: 
+   - [Key observation 1]
+   - [Key observation 2]
+   - [Key observation 3]
+EVIDENCE: 
+   - [Exact quote 1]
+   - [Exact quote 2]
+STRENGTHS:
+   - [Specific strength 1]
+   - [Specific strength 2]
+AREAS FOR IMPROVEMENT:
+   - [Specific area 1]
+   - [Specific area 2]
+SCORE: [X/5]
+
+OVERALL MEETING EFFECTIVENESS: [X/5]
+KEY RECOMMENDATIONS:
+   1. [Primary recommendation]
+   2. [Secondary recommendation]
+   3. [Tertiary recommendation]
