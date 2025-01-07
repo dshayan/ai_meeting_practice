@@ -3,22 +3,38 @@ TITLE_WITH_CUSTOMER = "Meeting with {}"
 TITLE_DEFAULT = "Select a customer to meet"
 SIDEBAR_HEADER = "Pitch Perfect 🎯"
 SIDEBAR_SUBHEADER = "AI Conversation Practice"
-CREATE_PROFILE_BUTTON = "Create customer profile →"
-NEW_MEETING_BUTTON = "Meet the customer →"
+CREATE_PROFILE_BUTTON = "Create Profile →"
+NEW_MEETING_BUTTON = "Meet Customers →"
 PREVIOUS_MEETINGS_HEADER = "Previous meetings"
 NO_SAVED_MEETINGS = "No saved meetings yet."
 SELECT_CUSTOMER_PROMPT = "Select a customer"
-START_MEETING_BUTTON = "Start meeting"
+START_MEETING_BUTTON = "Start Meeting"
 CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
 FREEZE_COMMAND = "freeze and report"
+
+# View Profiles Page Strings
+VIEW_PROFILES_TITLE = "Create customer profile"
+NO_PROFILES_FOUND = "No customer profiles found."
+VIEW_PROFILES_BUTTON = "View Profiles →"
+VIEW_PROFILE_BUTTON_TEXT = "View"
+VIEW_PROFILE_COLUMN_HEADER = "Action"
+PROFILE_TABLE_HEADERS = {
+    "name": "Name",
+    "role": "Role",
+    "last_modified": "Last Modified"
+}
+CREATE_NEW_PROFILE_BUTTON = "Create New Profile"
+PROFILE_EXPANDER_TITLE = "Profile: {}"
 
 # Create Profile Page Strings
 CREATE_PROFILE_TITLE = "Create customer profile"
 PROFILE_DESCRIPTION_PLACEHOLDER = "Describe your customer ..."
 SAVE_PROFILE_HEADER = "Save profile"
 PROFILE_NAME_LABEL = "Profile name"
-CREATE_NEW_PROFILE_BUTTON = "Create new profile"
 SAVE_PROFILE_BUTTON = "Save profile"
+
+# Button Labels
+CLOSE_BUTTON = "Close"
 
 # Error Messages
 CUSTOMERS_DIR_ERROR = "Customers directory not found: {}"

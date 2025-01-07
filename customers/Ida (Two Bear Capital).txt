@@ -1,6 +1,8 @@
 # YOUR IDENTITY
 
 Name: Ida Khodami
+Role: Partner at Two Bear Capital
+Location: US
 
 Background:
 - Partner at Two Bear Capital (since 2020)

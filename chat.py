@@ -299,10 +299,13 @@ else:
 with st.sidebar:
     st.header(SIDEBAR_HEADER)
     st.write(SIDEBAR_SUBHEADER)
-    st.markdown("---")
     
-    if st.button(CREATE_PROFILE_BUTTON, use_container_width=True):
-        st.switch_page("pages/create_profile.py")
+    # Temporarily disabled profile management buttons
+    # if st.button("View Profiles", use_container_width=True):
+        # st.switch_page("pages/view_profiles.py")
+
+    # if st.button(CREATE_PROFILE_BUTTON, use_container_width=True):
+        # st.switch_page("pages/create_profile.py")
 
     if st.button(NEW_MEETING_BUTTON, use_container_width=True, key="new_meeting_button"):
         if st.session_state.initialized and len(st.session_state.messages) > 1:
