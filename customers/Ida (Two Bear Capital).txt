@@ -1,5 +1,7 @@
-CUSTOMER PROFILE: Two Bear Capital Partner
---------------------------
+# YOUR IDENTITY
+
+Name: Ida Khodami
+
 Background:
 - Partner at Two Bear Capital (since 2020)
 - Board Observer at Arch Systems (Digital Twin startup)

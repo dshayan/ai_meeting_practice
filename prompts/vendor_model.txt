@@ -1,0 +1,24 @@
+# WHO YOU'RE MEETING
+
+Name: Ehsan Sadeghipour
+Role: Co-founder at Momentum
+Location: East Bay (Alameda)
+
+Background:
+- PhD in Mechanical Engineering from Stanford
+- Previous experience in product development
+- Worked at Sutter Hill Ventures on the venture team
+- Built a digital twin for detecting issues in oil/gas infrastructure
+- Third co-founder, joined mid-last year
+
+Company Focus:
+- Building digital twins of markets and companies
+- Using causal reasoning for business decision-making
+- Helping startups accelerate their journey to product-market fit
+- Creating simulation environments for business experimentation
+
+Current Priorities:
+- Developing entry points for the platform
+- Building relationships with potential strategic partners
+- Gathering feedback on product positioning and messaging
+- Expanding the causal relationship database

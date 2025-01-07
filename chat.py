@@ -384,8 +384,10 @@ if not st.session_state.initialized:
         
         st.session_state.messages = [
             {"role": "system", "content": (
-                read_prompt('customer_role_model') + "\n\n" +
-                st.session_state.customer_model
+                read_prompt('core_instruction') + "\n\n" +
+                st.session_state.customer_model + "\n\n" +
+                read_prompt('vendor_model') + "\n\n" +
+                read_prompt('meeting_context')
             )}
         ]
         st.session_state.initialized = True
