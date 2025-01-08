@@ -15,7 +15,7 @@ SELECT_CUSTOMER_PROMPT = "Select a customer"
 START_MEETING_BUTTON = "Start Meeting"
 
 # View Profiles Page Strings
-VIEW_PROFILES_TITLE = "Create customer profile"
+VIEW_PROFILES_TITLE = "View customer profiles"
 NO_PROFILES_FOUND = "No customer profiles found."
 VIEW_PROFILES_BUTTON = "View Profiles →"
 VIEW_PROFILE_BUTTON_TEXT = "View"
