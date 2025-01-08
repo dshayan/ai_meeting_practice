@@ -120,7 +120,7 @@ if len(st.session_state.profile_messages) > 2:  # If there's been some conversat
                 
                 # Add a small delay before redirecting
                 time.sleep(1)
-                st.switch_page("chat.py")
+                st.switch_page("💬_Meet.py")
 
 # Reset button
 if st.sidebar.button(CREATE_NEW_PROFILE_BUTTON, use_container_width=True):

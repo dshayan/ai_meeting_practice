@@ -1,23 +1,28 @@
 # Main Chat Page Strings
 TITLE_WITH_CUSTOMER = "Meeting with {}"
-TITLE_DEFAULT = "Select a customer to meet"
+TITLE_DEFAULT = "Meet your customer"
 CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
 FREEZE_COMMAND = "freeze and report"
 
 # Sidebar Strings
-SIDEBAR_HEADER = "Pitch Perfect 🎯"
+SIDEBAR_HEADER = "Pitch Perfect"
 SIDEBAR_SUBHEADER = "AI Conversation Practice"
-CREATE_PROFILE_BUTTON = "Create Profile →"
 NEW_MEETING_BUTTON = "Meet Customers →"
 PREVIOUS_MEETINGS_HEADER = "Previous meetings"
 NO_SAVED_MEETINGS = "No saved meetings yet."
 SELECT_CUSTOMER_PROMPT = "Select a customer"
 START_MEETING_BUTTON = "Start Meeting"
 
+# Create Profile Page Strings
+CREATE_PROFILE_TITLE = "Create customer profile"
+PROFILE_DESCRIPTION_PLACEHOLDER = "Describe your customer ..."
+SAVE_PROFILE_HEADER = "Save profile"
+PROFILE_NAME_LABEL = "Profile name"
+SAVE_PROFILE_BUTTON = "Save profile"
+
 # View Profiles Page Strings
-VIEW_PROFILES_TITLE = "View customer profiles"
+VIEW_PROFILES_TITLE = "Profiles"
 NO_PROFILES_FOUND = "No customer profiles found."
-VIEW_PROFILES_BUTTON = "View Profiles →"
 VIEW_PROFILE_BUTTON_TEXT = "View"
 VIEW_PROFILE_COLUMN_HEADER = "Action"
 PROFILE_TABLE_HEADERS = {
@@ -30,12 +35,17 @@ PROFILE_EXPANDER_TITLE = "Profile: {}"
 EDIT_PROFILE_LABEL = "Edit Profile"
 PROFILE_SAVE_SUCCESS_MESSAGE = "Profile saved successfully!"
 
-# Create Profile Page Strings
-CREATE_PROFILE_TITLE = "Create customer profile"
-PROFILE_DESCRIPTION_PLACEHOLDER = "Describe your customer ..."
-SAVE_PROFILE_HEADER = "Save profile"
-PROFILE_NAME_LABEL = "Profile name"
-SAVE_PROFILE_BUTTON = "Save profile"
+# View Reports Page Strings
+VIEW_REPORTS_TITLE = "Reports"
+NO_REPORTS_FOUND = "No meeting reports found."
+MEETINGS_DIR_ERROR = "Meetings directory not found: {}"
+REPORT_TABLE_HEADERS = {
+    "customer": "Customer",
+    "last_modified": "Last Modified",
+    "action": "Action"
+}
+VIEW_REPORT_BUTTON_TEXT = "View"
+REPORT_EXPANDER_TITLE = "Report: {}"
 
 # Button Labels
 CLOSE_BUTTON = "Close"

@@ -136,4 +136,4 @@ else:
 
 # Add button to create new profile
 if st.button(CREATE_NEW_PROFILE_BUTTON, use_container_width=True):
-    st.switch_page("pages/create_profile.py")
+    st.switch_page("pages/1_➕_Create.py")
