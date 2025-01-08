@@ -86,14 +86,51 @@ if profiles:
         if cols[3].button(VIEW_PROFILE_BUTTON_TEXT, key=f"view_{idx}"):
             st.session_state.selected_profile = row
     
-    # Display selected profile content
+    # Inside the if block where we display the selected profile content
     if st.session_state.selected_profile is not None:
         st.markdown("---")
         with st.expander(PROFILE_EXPANDER_TITLE.format(st.session_state.selected_profile['Name']), expanded=True):
-            st.text(st.session_state.selected_profile['Content'])
-            if st.button(CLOSE_BUTTON, key="close_profile"):
-                st.session_state.selected_profile = None
-                st.rerun()
+            # Add edit mode to session state if not exists
+            if 'edit_mode' not in st.session_state:
+                st.session_state.edit_mode = False
+                
+            # Show either editable text area or regular text display
+            if st.session_state.edit_mode:
+                edited_content = st.text_area(EDIT_PROFILE_LABEL, 
+                                           value=st.session_state.selected_profile['Content'],
+                                           height=400)
+                
+                col1, col2, col3 = st.columns([1, 1, 4])
+                
+                if col1.button(CANCEL_BUTTON, key="cancel_edit"):
+                    st.session_state.edit_mode = False
+                    st.rerun()
+                
+                if col2.button(SAVE_BUTTON, key="save_profile"):
+                    # Get the file path
+                    file_path = CUSTOMERS_DIR / st.session_state.selected_profile['File']
+                    try:
+                        # Save the edited content
+                        file_path.write_text(edited_content)
+                        st.success(PROFILE_SAVE_SUCCESS_MESSAGE)
+                        # Update the content in session state
+                        st.session_state.selected_profile['Content'] = edited_content
+                        st.session_state.edit_mode = False
+                        st.rerun()
+                    except Exception as e:
+                        st.error(PROFILE_EDIT_ERROR.format(str(e)))
+            else:
+                st.text(st.session_state.selected_profile['Content'])
+                col1, col2, col3 = st.columns([1, 1, 4])
+                
+                if col1.button(CLOSE_BUTTON, key="close_profile"):
+                    st.session_state.selected_profile = None
+                    st.rerun()
+                
+                if col2.button(EDIT_BUTTON, key="edit_profile"):
+                    st.session_state.edit_mode = True
+                    st.rerun()
+
 else:
     st.write(NO_PROFILES_FOUND)
 

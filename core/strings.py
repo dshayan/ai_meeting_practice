@@ -1,6 +1,10 @@
-# UI Strings
+# Main Chat Page Strings
 TITLE_WITH_CUSTOMER = "Meeting with {}"
 TITLE_DEFAULT = "Select a customer to meet"
+CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
+FREEZE_COMMAND = "freeze and report"
+
+# Sidebar Strings
 SIDEBAR_HEADER = "Pitch Perfect 🎯"
 SIDEBAR_SUBHEADER = "AI Conversation Practice"
 CREATE_PROFILE_BUTTON = "Create Profile →"
@@ -9,8 +13,6 @@ PREVIOUS_MEETINGS_HEADER = "Previous meetings"
 NO_SAVED_MEETINGS = "No saved meetings yet."
 SELECT_CUSTOMER_PROMPT = "Select a customer"
 START_MEETING_BUTTON = "Start Meeting"
-CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
-FREEZE_COMMAND = "freeze and report"
 
 # View Profiles Page Strings
 VIEW_PROFILES_TITLE = "Create customer profile"
@@ -25,6 +27,8 @@ PROFILE_TABLE_HEADERS = {
 }
 CREATE_NEW_PROFILE_BUTTON = "Create New Profile"
 PROFILE_EXPANDER_TITLE = "Profile: {}"
+EDIT_PROFILE_LABEL = "Edit Profile"
+PROFILE_SAVE_SUCCESS_MESSAGE = "Profile saved successfully!"
 
 # Create Profile Page Strings
 CREATE_PROFILE_TITLE = "Create customer profile"
@@ -35,6 +39,9 @@ SAVE_PROFILE_BUTTON = "Save profile"
 
 # Button Labels
 CLOSE_BUTTON = "Close"
+EDIT_BUTTON = "Edit"
+SAVE_BUTTON = "Save"
+CANCEL_BUTTON = "Cancel"
 
 # Error Messages
 CUSTOMERS_DIR_ERROR = "Customers directory not found: {}"
@@ -50,6 +57,7 @@ NO_COMPLETE_PROFILE = "No complete profile found. Please continue the conversati
 PROFILE_CREATION_PROMPT_ERROR = "Customer creation prompt not found: {}"
 PROFILE_SAVE_ERROR = "Error saving profile: {}"
 PROFILE_SAVE_SUCCESS = "Profile '{}' saved successfully!"
+PROFILE_EDIT_ERROR = "Error saving profile: {}"
 
 # File Templates
 EVALUATION_HEADER = "--- Meeting Evaluation {} ---\n\n"
