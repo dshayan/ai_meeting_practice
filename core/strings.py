@@ -1,7 +1,4 @@
 # Home Page Strings
-HOME_PAGE_TITLE = "Pitch Perfect"
-HOME_PAGE_ICON = "🎯"
-HOME_PAGE_LAYOUT = "wide"
 HOME_PAGE_WELCOME = """
 
 An AI-powered platform for realistic conversation practice, ideal for sales, interviews, negotiations, and professional interactions.
