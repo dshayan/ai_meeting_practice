@@ -8,6 +8,5 @@ st.set_page_config(
 )
 
 st.title(SIDEBAR_HEADER)
-st.write(SIDEBAR_SUBHEADER)
 
 st.markdown(HOME_PAGE_WELCOME)

@@ -4,17 +4,16 @@ HOME_PAGE_ICON = "🎯"
 HOME_PAGE_LAYOUT = "wide"
 HOME_PAGE_WELCOME = """
 
-This AI-powered platform helps you practice conversations with realistic personas. Perfect for sales, interviews, negotiations, or any professional interaction.
+An AI-powered platform for realistic conversation practice, ideal for sales, interviews, negotiations, and professional interactions.
 
-### Getting Started:
+Choose an option from the sidebar to begin:
 
 1. **➕ Create**: Create a new customer profile through guided conversation
-2. **💬 Meet**: Practice conversations with AI-powered customer personas
-3. **👀 Profiles**: View and manage your saved customer profiles
+2. **👀 Profiles**: View and manage your saved customer profiles
+3. **💬 Meet**: Practice conversations with AI-powered customer personas
 4. **📅 History**: Review your past meetings
 5. **📊 Reports**: View detailed evaluations and feedback from your meetings
 
-Choose an option from the sidebar to begin!
 """
 
 # Main Chat Page Strings

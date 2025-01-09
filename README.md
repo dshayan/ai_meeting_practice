@@ -1,6 +1,6 @@
 # Pitch Perfect
 
-An AI-powered platform for practicing conversations with realistic personas using Claude AI. Perfect for sales, interviews, negotiations, or any professional interaction.
+An AI-powered platform for realistic conversation practice, ideal for sales, interviews, negotiations, and professional interactions.
 
 ## Features
 
