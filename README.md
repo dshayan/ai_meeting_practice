@@ -25,4 +25,4 @@ An AI-powered platform for practicing conversations with realistic personas usin
    ```
    ANTHROPIC_API_KEY=your_key_here
    ```
-3. Run: `streamlit run chat.py`
+3. Run: `streamlit run pages/3_💬_Meet.py`

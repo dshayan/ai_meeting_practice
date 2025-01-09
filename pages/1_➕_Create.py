@@ -1,13 +1,21 @@
+# Imports
+import sys
+from pathlib import Path
 import streamlit as st
 from anthropic import Anthropic
 from datetime import datetime
-from pathlib import Path
 import json
 import time
 
+# Add the project root directory to Python path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+
+# Import from core
 from core.config import MODEL_CONFIG, CUSTOMERS_DIR, PROMPTS_DIR, PROFILE_EXTENSION
 from core.strings import *
 
+# Initialize Anthropic client
 client = Anthropic(api_key=MODEL_CONFIG["api_key"])
 
 def read_creation_prompt():
@@ -120,7 +128,7 @@ if len(st.session_state.profile_messages) > 2:  # If there's been some conversat
                 
                 # Add a small delay before redirecting
                 time.sleep(1)
-                st.switch_page("💬_Meet.py")
+                st.switch_page("pages/3_💬_Meet.py")
 
 # Reset button
 if st.sidebar.button(CREATE_NEW_PROFILE_BUTTON, use_container_width=True):

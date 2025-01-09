@@ -24,12 +24,12 @@ PROFILE_EXTENSION = ".txt"
 MEETING_EXTENSION = ".json"
 REPORT_EXTENSION = ".txt"
 
-# API Key
+# API Key - Check environment variables first, then Streamlit secrets
 ANTHROPIC_API_KEY = (
-    st.secrets.get("ANTHROPIC_API_KEY") or  # Streamlit Cloud secrets
     os.getenv("ANTHROPIC_API_KEY") or       # Local .env file
-    None
+    st.secrets.get("ANTHROPIC_API_KEY", None)  # Streamlit Cloud secrets
 )
+
 if not ANTHROPIC_API_KEY:
     st.error("ANTHROPIC_API_KEY not found. Please add it to your .env file locally or Streamlit secrets in cloud.")
     st.stop()

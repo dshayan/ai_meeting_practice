@@ -1,11 +1,17 @@
 # Imports
+import sys
+from pathlib import Path
 import json
 from datetime import datetime
 import streamlit as st
 from anthropic import Anthropic
-from core.strings import *
 
-# Import config
+# Add the project root directory to Python path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+
+# Import from core
+from core.strings import *
 from core.config import (
     MODEL_CONFIG,
     MEETINGS_DATA_DIR,
@@ -203,7 +209,6 @@ def update_response_evaluation(messages):
 
 def generate_meeting_evaluation():
     """Generate meeting evaluation using all conversation data"""
-
     vendor_messages = [
         msg for msg in st.session_state.messages 
         if msg["role"] == "user"
@@ -276,162 +281,116 @@ def get_chat_response(messages, mode="chat"):
         st.error(API_CALL_ERROR.format(str(e)))
         return None
 
-# Initialize Streamlit Session State
-if "initialized" not in st.session_state:
-    st.session_state.initialized = False
-    st.session_state.conversation_ended = False
-    st.session_state.messages = []
-    st.session_state.evaluations = []
-    st.session_state.customer_profile = None
-    st.session_state.current_meeting_timestamp = None
-    st.session_state.customer_model = None
-    st.session_state.response_evaluation_model = None
-    st.session_state.meeting_evaluation_model = None
-
-# Main UI - Title Section
-if st.session_state.initialized and st.session_state.customer_profile:
-    st.title(TITLE_WITH_CUSTOMER.format(st.session_state.customer_profile))
-    st.write(f"Last edit at {datetime.now().strftime('%Y-%m-%d')}")
-else:
-    st.title(TITLE_DEFAULT)
-
-# Sidebar
-with st.sidebar:
-    st.header(SIDEBAR_HEADER)
-    st.write(SIDEBAR_SUBHEADER)
-
-    if st.button(NEW_MEETING_BUTTON, use_container_width=True, key="new_meeting_button"):
-        if st.session_state.initialized and len(st.session_state.messages) > 1:
-            save_meeting(st.session_state.customer_profile)
-        
+def main():
+    # Initialize Streamlit Session State
+    if "initialized" not in st.session_state:
         st.session_state.initialized = False
+        st.session_state.conversation_ended = False
         st.session_state.messages = []
         st.session_state.evaluations = []
-        st.session_state.conversation_ended = False
         st.session_state.customer_profile = None
         st.session_state.current_meeting_timestamp = None
-        st.rerun()
-    
-    st.markdown("---")
-    st.header(PREVIOUS_MEETINGS_HEADER)
-    meetings = list_saved_meetings()
-    
-    if meetings:
-        for i, meeting in enumerate(meetings):
-            timestamp_str = meeting['timestamp']
-            if timestamp_str:  # Only try to parse if timestamp exists
-                timestamp = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
-                formatted_time = timestamp.strftime("%Y-%m-%d")
-            else:
-                formatted_time = "No date"
-            
-            is_active = (st.session_state.initialized and 
-                        st.session_state.customer_profile == meeting['customer_profile'] and
-                        st.session_state.current_meeting_timestamp == meeting['timestamp'])
-            
-            display_text = f"{meeting['customer_profile']}, {formatted_time}"
-            if is_active:
-                display_text = f"**{display_text}**"
-            
-            if st.button(
-                display_text, 
-                key=f"meeting_{i}", 
-                use_container_width=True,
-                disabled=is_active
-            ):
-                data = load_meeting(meeting['filename'])
-                if data:
-                    # Initialize system message
-                    st.session_state.messages = [{"role": "system", "content": data['customer_model']}]
-                    # Add conversation messages
-                    st.session_state.messages.extend([
-                        {"role": msg['role'], "content": msg['content']} 
-                        for msg in data['conversation']
-                    ])
-                    st.session_state.evaluations = data['vendor_evaluations']
-                    st.session_state.customer_model = data['customer_model']
-                    st.session_state.response_evaluation_model = data['response_evaluation_model']
-                    st.session_state.meeting_evaluation_model = data.get('meeting_evaluation_model', data.get('report_model', ''))
-                    st.session_state.initialized = True
-                    st.session_state.conversation_ended = False
-                    st.session_state.customer_profile = meeting['customer_profile']
-                    st.session_state.current_meeting_timestamp = meeting['timestamp']
-                    st.rerun()
+        st.session_state.customer_model = None
+        st.session_state.response_evaluation_model = None
+        st.session_state.meeting_evaluation_model = None
+
+    # Main UI - Title Section
+    if st.session_state.initialized and st.session_state.customer_profile:
+        st.title(TITLE_WITH_CUSTOMER.format(st.session_state.customer_profile))
+        st.write(f"Last edit at {datetime.now().strftime('%Y-%m-%d')}")
     else:
-        st.write(NO_SAVED_MEETINGS)
+        st.title(TITLE_DEFAULT)
 
-# Customer Profile Selection
-if not st.session_state.initialized:
-    profiles = list_customer_profiles()
-    selected_profile = st.selectbox(
-        SELECT_CUSTOMER_PROMPT,
-        profiles,
-        format_func=lambda x: x,
-        label_visibility="collapsed"
-    )
-    
-    if st.button(START_MEETING_BUTTON):
-        st.session_state.customer_profile = selected_profile
-        st.session_state.current_meeting_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Sidebar
+    with st.sidebar:
+
+        if st.button(NEW_MEETING_BUTTON, use_container_width=True, key="new_meeting_button"):
+            if st.session_state.initialized and len(st.session_state.messages) > 1:
+                save_meeting(st.session_state.customer_profile)
+            
+            st.session_state.initialized = False
+            st.session_state.messages = []
+            st.session_state.evaluations = []
+            st.session_state.conversation_ended = False
+            st.session_state.customer_profile = None
+            st.session_state.current_meeting_timestamp = None
+            st.rerun()
+
+    # Customer Profile Selection
+    if not st.session_state.initialized:
+        profiles = list_customer_profiles()
+        selected_profile = st.selectbox(
+            SELECT_CUSTOMER_PROMPT,
+            profiles,
+            format_func=lambda x: x,
+            label_visibility="collapsed"
+        )
         
-        st.session_state.customer_model = read_prompt(selected_profile, is_customer=True)
-        st.session_state.response_evaluation_model = read_prompt('response_evaluation_model')
-        st.session_state.meeting_evaluation_model = read_prompt('meeting_evaluation_model')
-        
-        st.session_state.messages = [
-            {"role": "system", "content": (
-                read_prompt('core_instruction') + "\n\n" +
-                st.session_state.customer_model + "\n\n" +
-                read_prompt('vendor_model') + "\n\n" +
-                read_prompt('meeting_context')
-            )}
-        ]
-        st.session_state.initialized = True
-        st.rerun()
+        if st.button(START_MEETING_BUTTON):
+            st.session_state.customer_profile = selected_profile
+            st.session_state.current_meeting_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            st.session_state.customer_model = read_prompt(selected_profile, is_customer=True)
+            st.session_state.response_evaluation_model = read_prompt('response_evaluation_model')
+            st.session_state.meeting_evaluation_model = read_prompt('meeting_evaluation_model')
+            
+            st.session_state.messages = [
+                {"role": "system", "content": (
+                    read_prompt('core_instruction') + "\n\n" +
+                    st.session_state.customer_model + "\n\n" +
+                    read_prompt('vendor_model') + "\n\n" +
+                    read_prompt('meeting_context')
+                )}
+            ]
+            st.session_state.initialized = True
+            st.rerun()
 
-# Chat Interface
-if st.session_state.initialized:
-    for message in st.session_state.messages:
-        if message["role"] != "system":
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
+    # Chat Interface
+    if st.session_state.initialized:
+        for message in st.session_state.messages:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
 
-    # Only show chat input if conversation hasn't ended
-    if not st.session_state.conversation_ended:
-        user_input = st.chat_input(CHAT_INPUT_PLACEHOLDER)
-        
-        if user_input:
-            # Vendor's message
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("user"):
-                st.write(user_input)
-                
-            # Evaluate vendor's response from customer's perspective
-            update_response_evaluation(st.session_state.messages)
-
-            if user_input.lower().strip() == FREEZE_COMMAND:
-                meeting_evaluation = generate_meeting_evaluation()
-                if meeting_evaluation:
-                    filename = save_report(meeting_evaluation)
-                    # Save the final state of the meeting and evaluation
-                    save_meeting(st.session_state.customer_profile)
-                    if st.session_state.evaluations:  # Check if there are any evaluations
-                        save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
-                    with st.chat_message("assistant"):
-                        st.write(meeting_evaluation)
-                        st.write(f"\nReport saved to: {filename}")
-                        st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
-                        st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")
-                st.session_state.conversation_ended = True
-            else:
-                # Customer's response
-                response = get_chat_response(st.session_state.messages)
-                if response:
-                    st.session_state.messages.append({"role": "assistant", "content": response})
-                    with st.chat_message("assistant"):
-                        st.write(response)
+        # Only show chat input if conversation hasn't ended
+        if not st.session_state.conversation_ended:
+            user_input = st.chat_input(CHAT_INPUT_PLACEHOLDER)
+            
+            if user_input:
+                # Vendor's message
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                with st.chat_message("user"):
+                    st.write(user_input)
                     
-                    # Save meeting and evaluation together
-                    save_meeting(st.session_state.customer_profile)
-                    if st.session_state.evaluations:  # Check if there are any evaluations
-                        save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
+                # Evaluate vendor's response from customer's perspective
+                update_response_evaluation(st.session_state.messages)
+
+                if user_input.lower().strip() == FREEZE_COMMAND:
+                    meeting_evaluation = generate_meeting_evaluation()
+                    if meeting_evaluation:
+                        filename = save_report(meeting_evaluation)
+                        # Save the final state of the meeting and evaluation
+                        save_meeting(st.session_state.customer_profile)
+                        if st.session_state.evaluations:  # Check if there are any evaluations
+                            save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
+                        with st.chat_message("assistant"):
+                            st.write(meeting_evaluation)
+                            st.write(f"\nReport saved to: {filename}")
+                            st.write(f"Meeting saved to: {st.session_state.current_meeting_filename}")
+                            st.write(f"Evaluations saved to: {st.session_state.current_evaluation_filename}")
+                    st.session_state.conversation_ended = True
+                else:
+                    # Customer's response
+                    response = get_chat_response(st.session_state.messages)
+                    if response:
+                        st.session_state.messages.append({"role": "assistant", "content": response})
+                        with st.chat_message("assistant"):
+                            st.write(response)
+                        
+                        # Save meeting and evaluation together
+                        save_meeting(st.session_state.customer_profile)
+                        if st.session_state.evaluations:  # Check if there are any evaluations
+                            save_evaluation(st.session_state.evaluations[-1], st.session_state.customer_profile)
+
+if __name__ == "__main__":
+    main()
