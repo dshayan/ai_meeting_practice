@@ -8,11 +8,11 @@ An AI-powered platform for realistic conversation practice, ideal for sales, int
 
 Choose an option from the sidebar to begin:
 
-1. **➕ Create**: Create a new customer profile through guided conversation
-2. **👀 Profiles**: View and manage your saved customer profiles
-3. **💬 Meet**: Practice conversations with AI-powered customer personas
-4. **📅 History**: Review your past meetings
-5. **📊 Reports**: View detailed evaluations and feedback from your meetings
+* **➕ Create**: Create a new customer profile through guided conversation
+* **👀 Profiles**: View and manage your saved customer profiles
+* **💬 Meet**: Practice conversations with AI-powered customer personas
+* **📅 History**: Review your past meetings
+* **📊 Reports**: View detailed evaluations and feedback from your meetings
 
 """
 
