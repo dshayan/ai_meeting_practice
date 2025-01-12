@@ -5,6 +5,7 @@ An AI-powered platform for realistic conversation practice, ideal for sales, int
 ## Features
 
 - Create custom customer profiles through guided conversation
+- Generate and manage meeting strategies based on customer profiles
 - Practice conversations with AI-powered customer personas
 - Real-time response evaluation from the customer's perspective
 - Detailed meeting reports with scoring across multiple criteria
@@ -22,7 +23,9 @@ An AI-powered platform for realistic conversation practice, ideal for sales, int
 
 1. Install requirements: `pip install -r requirements.txt`
 2. Create `.env` file with your Anthropic API key in the format:
+
    ```
    ANTHROPIC_API_KEY=your_key_here
    ```
-3. Run: `streamlit run pages/3_💬_Meet.py`
+   
+3. Run: `streamlit run 🏠_Home.py`
