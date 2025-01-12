@@ -3,8 +3,9 @@ import pandas as pd
 from datetime import datetime
 import json
 
-from core.config import MEETINGS_DIR, MEETING_EXTENSION
 from core.strings import *
+from core.styles import *
+from core.config import MEETINGS_DIR, MEETING_EXTENSION
 
 def parse_timestamp(timestamp_str, input_format="%Y%m%d_%H%M%S", output_format="%Y-%m-%d"):
     """Parse timestamp string to desired format"""
@@ -55,20 +56,7 @@ def list_saved_meetings():
     return sorted(meetings, key=lambda x: x['timestamp'], reverse=True)
 
 # Custom CSS for vertical alignment
-st.markdown("""
-    <style>
-        .stMarkdown p {
-            margin-bottom: 0;
-            line-height: 38px;
-            vertical-align: middle;
-        }
-        .meeting-cell {
-            display: flex;
-            align-items: center;
-            min-height: 38px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.markdown(COMMON_TABLE_CSS, unsafe_allow_html=True)
 
 st.title(VIEW_HISTORY_TITLE)
 
@@ -82,17 +70,20 @@ if meetings:
     # Create DataFrame with formatted dates
     df = pd.DataFrame(meetings)
     
-    # Create columns for layout
-    cols = st.columns([4, 2, 1])
-    
-    # Table headers
-    cols[0].write(f"**{MEETING_TABLE_HEADERS['customer']}**")
-    cols[1].write(f"**{MEETING_TABLE_HEADERS['date']}**")
-    cols[2].write(f"**{MEETING_TABLE_HEADERS['action']}**")
+    # Create columns with predefined layout
+    cols = st.columns(TABLE_LAYOUTS['history'])
+
+    # Table headers with consistent styling
+    for col, header in zip(cols, [
+        MEETING_TABLE_HEADERS['customer'],
+        MEETING_TABLE_HEADERS['date'],
+        MEETING_TABLE_HEADERS['action']
+    ]):
+        col.markdown(f"<div class='table-header col-{header.lower()}'>{header}</div>", unsafe_allow_html=True)
     
     # Display each meeting as a row with a button
     for idx, row in df.iterrows():
-        cols = st.columns([4, 2, 1])
+        cols = st.columns(TABLE_LAYOUTS['history'])
         cols[0].markdown(f"<div class='meeting-cell'>{row['customer_profile']}</div>", unsafe_allow_html=True)
         cols[1].markdown(f"<div class='meeting-cell'>{row['formatted_date']}</div>", unsafe_allow_html=True)
         if cols[2].button(VIEW_REPORT_BUTTON_TEXT, key=f"view_{idx}"):

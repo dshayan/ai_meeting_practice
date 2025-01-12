@@ -10,6 +10,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from core.strings import *
+from core.styles import *
 from core.config import (
     MODEL_CONFIG, MEETINGS_DIR, MEETING_EVALUATIONS_DIR, RESPONSE_EVALUATIONS_DIR,
     PROMPTS_DIR, CUSTOMERS_DIR, PROFILE_EXTENSION, MEETING_EXTENSION, REPORT_EXTENSION
@@ -66,10 +67,17 @@ def display_customer_profiles_table():
         st.write(NO_PROFILES_FOUND)
         return None
 
-    # Display table headers
-    cols = st.columns([3, 4, 2, 1])
-    for col, header in zip(cols, PROFILE_TABLE_HEADERS.values()):
-        col.write(f"**{header}**")
+    # Create columns with predefined layout
+    cols = st.columns(TABLE_LAYOUTS['meet'])
+
+    # Table headers with consistent styling
+    for col, header in zip(cols, [
+        PROFILE_TABLE_HEADERS['name'],
+        PROFILE_TABLE_HEADERS['role'],
+        PROFILE_TABLE_HEADERS['last_modified'],
+        PROFILE_TABLE_HEADERS['action']
+    ]):
+        col.markdown(f"<div class='table-header col-{header.lower()}'>{header}</div>", unsafe_allow_html=True)
 
     # Display profiles
     for idx, profile in enumerate(profiles):
@@ -83,7 +91,7 @@ def display_customer_profiles_table():
         
         last_modified = format_timestamp("%Y-%m-%d")
         
-        cols = st.columns([3, 4, 2, 1])
+        cols = st.columns(TABLE_LAYOUTS['meet'])
         cols[0].markdown(f"<div class='profile-cell'>{name}</div>", unsafe_allow_html=True)
         cols[1].markdown(f"<div class='profile-cell'>{role}</div>", unsafe_allow_html=True)
         cols[2].markdown(f"<div class='profile-cell'>{last_modified}</div>", unsafe_allow_html=True)
@@ -290,7 +298,7 @@ def main():
 
     # Customer Profile Selection
     if not st.session_state.initialized:
-        st.markdown(PROFILE_TABLE_CSS, unsafe_allow_html=True)
+        st.markdown(COMMON_TABLE_CSS, unsafe_allow_html=True)
         selected_profile = display_customer_profiles_table()
         if selected_profile:
             initialize_meeting(selected_profile)

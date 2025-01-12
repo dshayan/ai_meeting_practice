@@ -5,6 +5,8 @@ from datetime import datetime
 import json
 from anthropic import Anthropic
 
+from core.strings import *
+from core.styles import *
 from core.config import (
     CUSTOMERS_DIR,
     STRATEGIES_DIR, 
@@ -16,7 +18,6 @@ from core.config import (
     REPORT_EXTENSION,
     MODEL_CONFIG
 )
-from core.strings import *
 
 # Initialize Anthropic client
 client = Anthropic(api_key=MODEL_CONFIG["api_key"])
@@ -120,20 +121,7 @@ def save_strategy(customer_name, strategy_content):
         return False
 
 # Custom CSS for vertical alignment
-st.markdown("""
-    <style>
-        .stMarkdown p {
-            margin-bottom: 0;
-            line-height: 38px;
-            vertical-align: middle;
-        }
-        .strategy-cell {
-            display: flex;
-            align-items: center;
-            min-height: 38px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.markdown(COMMON_TABLE_CSS, unsafe_allow_html=True)
 
 st.title(STRATEGY_PAGE_TITLE)
 
@@ -165,17 +153,20 @@ if profiles:
     # Create DataFrame
     df = pd.DataFrame(profiles)
     
-    # Create columns for layout
-    cols = st.columns([3, 4, 2])
-    
-    # Table headers
-    cols[0].write(f"**{STRATEGY_TABLE_HEADERS['name']}**")
-    cols[1].write(f"**{STRATEGY_TABLE_HEADERS['role']}**")
-    cols[2].write(f"**{STRATEGY_TABLE_HEADERS['action']}**")
+    # Create columns with predefined layout
+    cols = st.columns(TABLE_LAYOUTS['strategy'])
+
+    # Table headers with consistent styling
+    for col, header in zip(cols, [
+        STRATEGY_TABLE_HEADERS['name'],
+        STRATEGY_TABLE_HEADERS['role'],
+        STRATEGY_TABLE_HEADERS['action']
+    ]):
+        col.markdown(f"<div class='table-header col-{header.lower()}'>{header}</div>", unsafe_allow_html=True)
     
     # Display each profile as a row
     for idx, row in df.iterrows():
-        cols = st.columns([3, 4, 2])
+        cols = st.columns(TABLE_LAYOUTS['strategy'])
         cols[0].markdown(f"<div class='strategy-cell'>{row['Name']}</div>", unsafe_allow_html=True)
         cols[1].markdown(f"<div class='strategy-cell'>{row['Role']}</div>", unsafe_allow_html=True)
         

@@ -3,8 +3,9 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
-from core.config import CUSTOMERS_DIR, PROFILE_EXTENSION
 from core.strings import *
+from core.styles import *
+from core.config import CUSTOMERS_DIR, PROFILE_EXTENSION
 
 def list_customer_profiles():
     """Get list of available customer profiles with their details"""
@@ -38,20 +39,7 @@ def list_customer_profiles():
     return profiles
 
 # Custom CSS for vertical alignment
-st.markdown("""
-    <style>
-        .stMarkdown p {
-            margin-bottom: 0;
-            line-height: 38px;  /* Matches the height of Streamlit buttons */
-            vertical-align: middle;
-        }
-        .profile-cell {
-            display: flex;
-            align-items: center;
-            min-height: 38px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.markdown(COMMON_TABLE_CSS, unsafe_allow_html=True)
 
 st.title(VIEW_PROFILES_TITLE)
 
@@ -68,21 +56,24 @@ if profiles:
     # Format the Last Modified column
     df['Last Modified'] = df['Last Modified'].dt.strftime('%Y-%m-%d')
     
-    # Create columns for layout
-    cols = st.columns([3, 4, 2, 1])
+    # Create columns with predefined layout
+    cols = st.columns(TABLE_LAYOUTS['profiles'])
     
-    # Table headers
-    cols[0].write(f"**{PROFILE_TABLE_HEADERS['name']}**")
-    cols[1].write(f"**{PROFILE_TABLE_HEADERS['role']}**")
-    cols[2].write(f"**{PROFILE_TABLE_HEADERS['last_modified']}**")
-    cols[3].write(f"**{VIEW_PROFILE_COLUMN_HEADER}**")
+    # Table headers with consistent styling
+    for col, header in zip(cols, [
+        PROFILE_TABLE_HEADERS['name'],
+        PROFILE_TABLE_HEADERS['role'],
+        PROFILE_TABLE_HEADERS['last_modified'],
+        VIEW_PROFILE_COLUMN_HEADER
+    ]):
+        col.markdown(f"<div class='table-header col-{header.lower()}'>{header}</div>", unsafe_allow_html=True)
     
     # Display each profile as a row with a button
     for idx, row in df.iterrows():
-        cols = st.columns([3, 4, 2, 1])
-        cols[0].markdown(f"<div class='profile-cell'>{row['Name']}</div>", unsafe_allow_html=True)
-        cols[1].markdown(f"<div class='profile-cell'>{row['Role']}</div>", unsafe_allow_html=True)
-        cols[2].markdown(f"<div class='profile-cell'>{row['Last Modified']}</div>", unsafe_allow_html=True)
+        cols = st.columns(TABLE_LAYOUTS['profiles'])
+        cols[0].markdown(f"<div class='table-cell'>{row['Name']}</div>", unsafe_allow_html=True)
+        cols[1].markdown(f"<div class='table-cell'>{row['Role']}</div>", unsafe_allow_html=True)
+        cols[2].markdown(f"<div class='table-cell'>{row['Last Modified']}</div>", unsafe_allow_html=True)
         if cols[3].button(VIEW_PROFILE_BUTTON_TEXT, key=f"view_{idx}"):
             st.session_state.selected_profile = row
     

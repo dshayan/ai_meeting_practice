@@ -3,8 +3,9 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
-from core.config import MEETING_EVALUATIONS_DIR, REPORT_EXTENSION
 from core.strings import *
+from core.styles import *
+from core.config import MEETING_EVALUATIONS_DIR, REPORT_EXTENSION
 
 def list_meeting_reports():
     """Get list of available meeting reports with their details"""
@@ -37,20 +38,7 @@ def list_meeting_reports():
     return reports
 
 # Custom CSS for vertical alignment (same as view_profiles.py)
-st.markdown("""
-    <style>
-        .stMarkdown p {
-            margin-bottom: 0;
-            line-height: 38px;
-            vertical-align: middle;
-        }
-        .report-cell {
-            display: flex;
-            align-items: center;
-            min-height: 38px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.markdown(COMMON_TABLE_CSS, unsafe_allow_html=True)
 
 st.title(VIEW_REPORTS_TITLE)
 
@@ -67,17 +55,20 @@ if reports:
     # Format the Last Modified column
     df['Last Modified'] = df['Last Modified'].dt.strftime('%Y-%m-%d')
     
-    # Create columns for layout
-    cols = st.columns([4, 2, 1])
-    
-    # Table headers
-    cols[0].write(f"**{REPORT_TABLE_HEADERS['customer']}**")
-    cols[1].write(f"**{REPORT_TABLE_HEADERS['last_modified']}**")
-    cols[2].write(f"**{REPORT_TABLE_HEADERS['action']}**")
+    # Create columns with predefined layout
+    cols = st.columns(TABLE_LAYOUTS['reports'])
+
+    # Table headers with consistent styling
+    for col, header in zip(cols, [
+        REPORT_TABLE_HEADERS['customer'],
+        REPORT_TABLE_HEADERS['last_modified'],
+        REPORT_TABLE_HEADERS['action']
+    ]):
+        col.markdown(f"<div class='table-header col-{header.lower()}'>{header}</div>", unsafe_allow_html=True)
     
     # Display each report as a row with a button
     for idx, row in df.iterrows():
-        cols = st.columns([4, 2, 1])
+        cols = st.columns(TABLE_LAYOUTS['reports'])
         cols[0].markdown(f"<div class='report-cell'>{row['Customer']}</div>", unsafe_allow_html=True)
         cols[1].markdown(f"<div class='report-cell'>{row['Last Modified']}</div>", unsafe_allow_html=True)
         if cols[2].button(VIEW_REPORT_BUTTON_TEXT, key=f"view_{idx}"):
