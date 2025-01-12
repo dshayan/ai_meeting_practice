@@ -1,13 +1,58 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
 
 from core.config import MEETINGS_DIR, MEETING_EXTENSION
 from core.strings import *
-import importlib
-meet = importlib.import_module("pages.4_💬_Meet")
-list_saved_meetings = meet.list_saved_meetings
-load_meeting = meet.load_meeting
+
+def parse_timestamp(timestamp_str, input_format="%Y%m%d_%H%M%S", output_format="%Y-%m-%d"):
+    """Parse timestamp string to desired format"""
+    try:
+        dt = datetime.strptime(timestamp_str, input_format)
+        return dt.strftime(output_format)
+    except ValueError:
+        # Fallback for legacy timestamps
+        try:
+            dt = datetime.strptime(timestamp_str, "%y%m%d_%H%M%S")
+            return dt.strftime(output_format)
+        except ValueError:
+            return "Unknown Date"
+
+def load_meeting(filename):
+    """Load meeting data from file"""
+    filepath = MEETINGS_DIR / filename
+    try:
+        with open(filepath) as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(MEETING_FILE_ERROR.format(str(e)))
+        return None
+
+def list_saved_meetings():
+    """List all saved meetings with their metadata"""
+    if not MEETINGS_DIR.exists():
+        st.error(MEETINGS_DIR_ERROR.format(MEETINGS_DIR))
+        return []
+    
+    meetings = []
+    for file in MEETINGS_DIR.glob(f"*{MEETING_EXTENSION}"):
+        try:
+            meeting_data = json.loads(file.read_text())
+            # Get timestamp from meeting_start field instead of filename
+            timestamp = meeting_data.get('meeting_start', '')
+            
+            meetings.append({
+                'filename': file.name,
+                'customer_profile': meeting_data.get('customer_profile', 'Unknown'),
+                'timestamp': timestamp,
+                'formatted_date': parse_timestamp(timestamp) if timestamp else "Unknown Date"
+            })
+        except Exception as e:
+            st.error(MEETING_FILE_ERROR.format(str(e)))
+            continue
+    
+    return sorted(meetings, key=lambda x: x['timestamp'], reverse=True)
 
 # Custom CSS for vertical alignment
 st.markdown("""
@@ -36,7 +81,6 @@ meetings = list_saved_meetings()
 if meetings:
     # Create DataFrame with formatted dates
     df = pd.DataFrame(meetings)
-    df['Date'] = pd.to_datetime(df['timestamp'], format='%Y%m%d_%H%M%S').dt.strftime('%Y-%m-%d')
     
     # Create columns for layout
     cols = st.columns([4, 2, 1])
@@ -50,7 +94,7 @@ if meetings:
     for idx, row in df.iterrows():
         cols = st.columns([4, 2, 1])
         cols[0].markdown(f"<div class='meeting-cell'>{row['customer_profile']}</div>", unsafe_allow_html=True)
-        cols[1].markdown(f"<div class='meeting-cell'>{row['Date']}</div>", unsafe_allow_html=True)
+        cols[1].markdown(f"<div class='meeting-cell'>{row['formatted_date']}</div>", unsafe_allow_html=True)
         if cols[2].button(VIEW_REPORT_BUTTON_TEXT, key=f"view_{idx}"):
             meeting_data = load_meeting(row['filename'])
             if meeting_data:

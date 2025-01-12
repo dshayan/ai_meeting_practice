@@ -38,7 +38,8 @@ VIEW_PROFILE_COLUMN_HEADER = "Action"
 PROFILE_TABLE_HEADERS = {
     "name": "Name",
     "role": "Role",
-    "last_modified": "Last Modified"
+    "last_modified": "Last Modified",
+    "action": "Action"
 }
 CREATE_NEW_PROFILE_BUTTON = "Create New Profile"
 PROFILE_EXPANDER_TITLE = "Profile: {}"
@@ -118,3 +119,28 @@ EVALUATION_SECTION = "\n--- Evaluation #{} ---\n"
 MEETING_FILENAME = "meeting_with_{}_{}{}"
 EVALUATION_FILENAME = "response_evaluation_{}_{}.txt"
 REPORT_FILENAME = "meeting_evaluation_{}_{}{}"
+
+# Chat Interface Strings
+CHAT_INITIAL_VENDOR_PITCH = "Initial vendor pitch:\n\n"
+CHAT_CUSTOMER_PREVIOUS_MESSAGE = "Customer's previous message: {}\n\n"
+CHAT_VENDOR_RESPONSE = "Vendor's response: {}"
+CHAT_CUSTOMER_CONTEXT = "Customer Context:\n{}\n\nVendor Messages to Evaluate:"
+CHAT_REPORT_SAVED = "\nReport saved to: {}"
+CHAT_MEETING_SAVED = "Meeting saved to: {}"
+CHAT_EVALUATIONS_SAVED = "Evaluations saved to: {}"
+
+# CSS Styles
+PROFILE_TABLE_CSS = """
+    <style>
+        .stMarkdown p {
+            margin-bottom: 0;
+            line-height: 38px;
+            vertical-align: middle;
+        }
+        .profile-cell {
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+        }
+    </style>
+"""
