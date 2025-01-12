@@ -39,5 +39,6 @@ TABLE_LAYOUTS = {
     'strategy': [3, 5, 2],     # Name, Role, Action
     'meet': [3, 5, 2, 2],      # Name, Role, Last Modified, Action
     'history': [4, 4, 2],      # Customer, Date, Action
-    'reports': [4, 4, 2]       # Customer, Last Modified, Action
+    'reports': [4, 4, 2],      # Customer, Last Modified, Action
+    'settings': [4, 4, 2]      # Name, Last Modified, Action
 }

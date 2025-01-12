@@ -97,6 +97,21 @@ REPORT_TABLE_HEADERS = {
 VIEW_REPORT_BUTTON_TEXT = "View"
 REPORT_EXPANDER_TITLE = "Report: {}"
 
+# Settings Page
+SETTINGS_PAGE_TITLE = "System prompts settings"
+NO_PROMPTS_FOUND = "No prompts found in the prompts directory."
+PROMPTS_DIR_ERROR = "Prompts directory not found: {}"
+PROMPTS_TABLE_HEADERS = {
+    "name": "Name",
+    "last_modified": "Last Modified",
+    "action": "Action"
+}
+VIEW_PROMPT_BUTTON = "View"
+PROMPT_EXPANDER_TITLE = "Prompt: {}"
+EDIT_PROMPT_LABEL = "Edit Prompt"
+PROMPT_SAVE_SUCCESS = "Prompt saved successfully!"
+PROMPT_SAVE_ERROR = "Error saving prompt: {}"
+
 # Common Button Labels
 CLOSE_BUTTON = "Close"
 EDIT_BUTTON = "Edit"
