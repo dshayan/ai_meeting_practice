@@ -4,12 +4,13 @@ COMMON_TABLE_CSS = """
         /* Base table styles */
         .stMarkdown p {
             margin-bottom: 0;
-            line-height: 38px;
+            line-height: 48px;
             vertical-align: middle;
         }
         
         /* Table header styles */
         .table-header {
+            min-height: 64px;
             font-weight: bold;
             padding: 8px 0;
         }
@@ -18,19 +19,14 @@ COMMON_TABLE_CSS = """
         .table-cell {
             display: flex;
             align-items: center;
-            min-height: 38px;
+            min-height: 48px;
             padding: 8px 0;
             white-space: nowrap;
         }
         
-        /* Table row hover effect */
-        .table-row:hover {
-            background-color: #f8f9fa;
-        }
-        
         /* Table button styles */
         .table-button {
-            width: 100%;
+            min-width: 64px;
             padding: 4px 8px;
             white-space: nowrap;
         }
