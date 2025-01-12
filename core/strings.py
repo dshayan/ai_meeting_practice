@@ -1,3 +1,7 @@
+# Application Title
+SIDEBAR_HEADER = "Pitch Perfect"
+SIDEBAR_SUBHEADER = "AI Conversation Practice"
+
 # Home Page Strings
 HOME_PAGE_WELCOME = """
 An AI-powered platform for realistic conversation practice, ideal for sales, interviews, negotiations, and professional interactions.
@@ -12,16 +16,7 @@ Choose an option from the sidebar to begin:
 * **📊 Reports**: View detailed evaluations and feedback from your meetings
 """
 
-# Sidebar Strings
-SIDEBAR_HEADER = "Pitch Perfect"
-SIDEBAR_SUBHEADER = "AI Conversation Practice"
-NEW_MEETING_BUTTON = "Meet Customers"
-PREVIOUS_MEETINGS_HEADER = "Previous meetings"
-NO_SAVED_MEETINGS = "No saved meetings yet."
-SELECT_CUSTOMER_PROMPT = "Select a customer"
-START_MEETING_BUTTON = "Start Meeting"
-
-# Create Profile Page (➕) Strings
+# Create Profile Page
 CREATE_PROFILE_TITLE = "Create customer profile"
 PROFILE_DESCRIPTION_PLACEHOLDER = "Describe your customer ..."
 SAVE_PROFILE_HEADER = "Save profile"
@@ -33,7 +28,7 @@ PROFILE_SAVE_SUCCESS = "Profile '{}' saved successfully!"
 PROFILE_NAME_REQUIRED = "Please enter a profile name"
 NO_COMPLETE_PROFILE = "No complete profile found. Please continue the conversation until a full profile is generated."
 
-# View Profiles Page (👀) Strings
+# View Profiles Page
 VIEW_PROFILES_TITLE = "Customer profiles"
 NO_PROFILES_FOUND = "No customer profiles found."
 VIEW_PROFILE_BUTTON_TEXT = "View"
@@ -50,7 +45,7 @@ EDIT_PROFILE_LABEL = "Edit Profile"
 PROFILE_SAVE_SUCCESS_MESSAGE = "Profile saved successfully!"
 PROFILE_EDIT_ERROR = "Error saving profile: {}"
 
-# Strategy Page (🎯) Strings
+# Strategy Page
 STRATEGY_PAGE_TITLE = "Meeting strategy"
 NO_STRATEGIES_FOUND = "No customer profiles found."
 STRATEGY_TABLE_HEADERS = {
@@ -67,7 +62,7 @@ STRATEGY_SAVE_ERROR = "Error saving strategy: {}"
 STRATEGY_GENERATION_ERROR = "Error generating strategy: {}"
 STRATEGY_PROMPT_ERROR = "Strategy generation prompt not found: {}"
 
-# Meet Page (💬) Strings
+# Meet Page
 TITLE_WITH_CUSTOMER = "Meeting with {}"
 TITLE_DEFAULT = "Meet your customer"
 CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
@@ -79,8 +74,9 @@ CHAT_CUSTOMER_CONTEXT = "Customer Context:\n{}\n\nVendor Messages to Evaluate:"
 CHAT_REPORT_SAVED = "\nReport saved to: {}"
 CHAT_MEETING_SAVED = "Meeting saved to: {}"
 CHAT_EVALUATIONS_SAVED = "Evaluations saved to: {}"
+NEW_MEETING_BUTTON = "Meet Customers"
 
-# History Page (📅) Strings
+# History Page
 VIEW_HISTORY_TITLE = "Meeting history"
 NO_MEETINGS_FOUND = "No previous meetings found."
 MEETING_TABLE_HEADERS = {
@@ -90,7 +86,7 @@ MEETING_TABLE_HEADERS = {
 }
 MEETING_EXPANDER_TITLE = "Meeting with {}"
 
-# Reports Page (📊) Strings
+# Reports Page
 VIEW_REPORTS_TITLE = "Meeting reports"
 NO_REPORTS_FOUND = "No meeting reports found."
 REPORT_TABLE_HEADERS = {
