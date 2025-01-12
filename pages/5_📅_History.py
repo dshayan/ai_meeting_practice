@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from core.config import MEETINGS_DATA_DIR, MEETING_EXTENSION
+from core.config import MEETINGS_DIR, MEETING_EXTENSION
 from core.strings import *
 import importlib
-meet = importlib.import_module("pages.3_💬_Meet")
+meet = importlib.import_module("pages.4_💬_Meet")
 list_saved_meetings = meet.list_saved_meetings
 load_meeting = meet.load_meeting
 

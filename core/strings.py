@@ -7,17 +7,12 @@ Choose an option from the sidebar to begin:
 
 * **➕ Create**: Create a new customer profile through guided conversation
 * **👀 Profiles**: View and manage your saved customer profiles
+* **🎯 Strategy**: View and create meeting strategies
 * **💬 Meet**: Practice conversations with AI-powered customer personas
 * **📅 History**: Review your past meetings
 * **📊 Reports**: View detailed evaluations and feedback from your meetings
 
 """
-
-# Main Chat Page Strings
-TITLE_WITH_CUSTOMER = "Meeting with {}"
-TITLE_DEFAULT = "Meet your customer"
-CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
-FREEZE_COMMAND = "freeze and report"
 
 # Sidebar Strings
 SIDEBAR_HEADER = "Pitch Perfect"
@@ -36,7 +31,7 @@ PROFILE_NAME_LABEL = "Profile name"
 SAVE_PROFILE_BUTTON = "Save profile"
 
 # View Profiles Page Strings
-VIEW_PROFILES_TITLE = "Profiles"
+VIEW_PROFILES_TITLE = "Customer profiles"
 NO_PROFILES_FOUND = "No customer profiles found."
 VIEW_PROFILE_BUTTON_TEXT = "View"
 VIEW_PROFILE_COLUMN_HEADER = "Action"
@@ -50,8 +45,31 @@ PROFILE_EXPANDER_TITLE = "Profile: {}"
 EDIT_PROFILE_LABEL = "Edit Profile"
 PROFILE_SAVE_SUCCESS_MESSAGE = "Profile saved successfully!"
 
+# Strategy Page Strings
+STRATEGY_PAGE_TITLE = "Meeting strategy"
+NO_STRATEGIES_FOUND = "No customer profiles found."
+STRATEGY_TABLE_HEADERS = {
+    "name": "Name",
+    "role": "Role",
+    "action": "Action"
+}
+STRATEGY_VIEW_BUTTON = "View"
+STRATEGY_CREATE_BUTTON = "Create"
+STRATEGY_EXPANDER_TITLE = "Strategy for {}"
+STRATEGY_MEET_BUTTON = "Meet"
+STRATEGY_CREATION_SUCCESS = "Strategy created for {}"
+STRATEGY_SAVE_ERROR = "Error saving strategy: {}"
+STRATEGY_GENERATION_ERROR = "Error generating strategy: {}"
+STRATEGY_PROMPT_ERROR = "Strategy generation prompt not found: {}"
+
+# Main Chat Page Strings
+TITLE_WITH_CUSTOMER = "Meeting with {}"
+TITLE_DEFAULT = "Meet your customer"
+CHAT_INPUT_PLACEHOLDER = "Make your pitch ..."
+FREEZE_COMMAND = "freeze and report"
+
 # View History Page Strings
-VIEW_HISTORY_TITLE = "History"
+VIEW_HISTORY_TITLE = "Meeting history"
 NO_MEETINGS_FOUND = "No previous meetings found."
 MEETING_TABLE_HEADERS = {
     "customer": "Customer",
@@ -61,7 +79,7 @@ MEETING_TABLE_HEADERS = {
 MEETING_EXPANDER_TITLE = "Meeting with {}"
 
 # View Reports Page Strings
-VIEW_REPORTS_TITLE = "Reports"
+VIEW_REPORTS_TITLE = "Meeting reports"
 NO_REPORTS_FOUND = "No meeting reports found."
 MEETINGS_DIR_ERROR = "Meetings directory not found: {}"
 REPORT_TABLE_HEADERS = {

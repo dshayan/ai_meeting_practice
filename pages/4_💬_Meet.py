@@ -14,7 +14,9 @@ sys.path.append(str(project_root))
 from core.strings import *
 from core.config import (
     MODEL_CONFIG,
-    MEETINGS_DATA_DIR,
+    MEETINGS_DIR,
+    MEETING_EVALUATIONS_DIR,
+    RESPONSE_EVALUATIONS_DIR,
     PROMPTS_DIR,
     CUSTOMERS_DIR,
     PROFILE_EXTENSION,
@@ -54,7 +56,7 @@ def list_saved_meetings():
     """List all saved meetings"""
     try:
         meetings = []
-        for file in MEETINGS_DATA_DIR.glob(f"*{MEETING_EXTENSION}"):
+        for file in MEETINGS_DIR.glob(f"*{MEETING_EXTENSION}"):
             if file.is_file():
                 try:
                     data = json.loads(file.read_text())
@@ -74,7 +76,7 @@ def list_saved_meetings():
 def load_meeting(filename):
     """Load meeting data from file"""
     try:
-        filepath = MEETINGS_DATA_DIR / filename
+        filepath = MEETINGS_DIR / filename
         if not filepath.exists():
             st.error(MEETING_LOAD_ERROR.format(filepath))
             return None
@@ -141,7 +143,7 @@ def save_meeting(profile_name):
         
         # Use the same timestamp for filename
         filename = MEETING_FILENAME.format(profile_name, timestamp, MEETING_EXTENSION)
-        filepath = MEETINGS_DATA_DIR / filename
+        filepath = MEETINGS_DIR / filename
         filepath.write_text(json.dumps(meeting_data, indent=2))
         
         # Update session state with current filename and timestamp
@@ -161,7 +163,7 @@ def save_evaluation(evaluation, profile_name):
         
         # Create a new evaluation filename for each meeting
         evaluation_filename = EVALUATION_FILENAME.format(profile_name, timestamp)
-        filepath = MEETINGS_DATA_DIR / evaluation_filename
+        filepath = RESPONSE_EVALUATIONS_DIR / evaluation_filename
         
         # Write evaluation to a new file (not append mode)
         with open(filepath, 'w') as f:
@@ -242,7 +244,7 @@ def save_report(report):
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = REPORT_FILENAME.format(st.session_state.customer_profile, timestamp, REPORT_EXTENSION)
-        filepath = MEETINGS_DATA_DIR / filename
+        filepath = MEETING_EVALUATIONS_DIR / filename
         filepath.write_text(report)
         return filename
     except Exception as e:

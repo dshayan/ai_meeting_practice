@@ -3,20 +3,20 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
-from core.config import MEETINGS_DATA_DIR, REPORT_EXTENSION
+from core.config import MEETING_EVALUATIONS_DIR, REPORT_EXTENSION
 from core.strings import *
 
 def list_meeting_reports():
     """Get list of available meeting reports with their details"""
     reports = []
     
-    if not MEETINGS_DATA_DIR.exists():
-        st.error(MEETINGS_DIR_ERROR.format(MEETINGS_DATA_DIR))
+    if not MEETING_EVALUATIONS_DIR.exists():
+        st.error(MEETINGS_DIR_ERROR.format(MEETING_EVALUATIONS_DIR))
         return reports
         
     # Look specifically for meeting evaluation reports using the filename pattern
     # Format: meeting_evaluation_CustomerName_YYYYMMDD_HHMMSS.txt
-    for file in MEETINGS_DATA_DIR.glob("meeting_evaluation_*" + REPORT_EXTENSION):
+    for file in MEETING_EVALUATIONS_DIR.glob("meeting_evaluation_*" + REPORT_EXTENSION):
         if file.is_file():
             content = file.read_text()
             

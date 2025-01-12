@@ -1,0 +1,44 @@
+# STRATEGY GENERATION FRAMEWORK
+
+Based on the following information, provide a comprehensive meeting strategy:
+
+Customer Profile:
+{}
+
+Meeting History:
+{}
+
+Previous Evaluations:
+{}
+
+Please structure your strategy to include:
+
+1. Key Objectives
+   - Primary goals for the meeting
+   - Desired outcomes
+   - Success metrics
+
+2. Potential Challenges
+   - Anticipated objections
+   - Historical pain points
+   - Areas of resistance
+
+3. Talking Points
+   - Key value propositions
+   - Relevant case studies
+   - Industry-specific insights
+
+4. Questions to Ask
+   - Strategic inquiries
+   - Discovery questions
+   - Follow-up from previous meetings
+
+5. Areas to Avoid
+   - Sensitive topics
+   - Previous negative experiences
+   - Competitive concerns
+
+6. Success Metrics
+   - Quantifiable outcomes
+   - Relationship milestones
+   - Next steps criteria

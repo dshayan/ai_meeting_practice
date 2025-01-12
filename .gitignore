@@ -12,8 +12,5 @@ __pycache__/
 # Virtual Environment
 venv/
 
-# Meetings data
-meetings_data/
-
-# Temp data
-_temp_data/
+# Data directories
+data/
