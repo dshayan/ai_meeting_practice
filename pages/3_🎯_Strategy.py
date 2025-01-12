@@ -8,8 +8,8 @@ from anthropic import Anthropic
 from core.config import (
     CUSTOMERS_DIR,
     STRATEGIES_DIR, 
-    MEETINGS_DIR,  # Use new name
-    MEETING_EVALUATIONS_DIR,  # Add this for reports
+    MEETINGS_DIR,
+    MEETING_EVALUATIONS_DIR,
     PROMPTS_DIR,
     PROFILE_EXTENSION,
     MEETING_EXTENSION,
@@ -29,14 +29,16 @@ def strategy_exists(customer_name):
     """Check if strategy exists for customer"""
     return get_strategy_filepath(customer_name).exists()
 
-def list_saved_meetings():
-    """List all saved meetings"""
+def list_saved_meetings(customer_name=None):
+    """List saved meetings, optionally filtered by customer"""
     try:
         meetings = []
         for file in MEETINGS_DIR.glob(f"*{MEETING_EXTENSION}"):
             if file.is_file():
                 try:
                     data = json.loads(file.read_text())
+                    if customer_name and data.get('customer_profile') != customer_name:
+                        continue
                     meetings.append({
                         'filename': file.name,
                         'customer_profile': data.get('customer_profile', 'Unknown Customer'),
@@ -50,30 +52,26 @@ def list_saved_meetings():
         st.error(MEETINGS_LIST_ERROR.format(str(e)))
         return []
 
-def list_meeting_reports():
-    """Get list of available meeting reports with their details"""
+def list_meeting_reports(customer_name=None):
+    """Get list of meeting reports, optionally filtered by customer"""
     reports = []
     
     if not MEETING_EVALUATIONS_DIR.exists():
         st.error(MEETINGS_DIR_ERROR.format(MEETING_EVALUATIONS_DIR))
         return reports
         
-    # Look specifically for meeting evaluation reports
     for file in MEETING_EVALUATIONS_DIR.glob("meeting_evaluation_*" + REPORT_EXTENSION):
         if file.is_file():
-            content = file.read_text()
-            
-            # Extract customer name from filename
             parts = file.stem.split('_')
             if len(parts) >= 3:
-                customer_name = ' '.join(parts[2:-2])
-            else:
-                customer_name = "Unknown"
-            
-            reports.append({
-                "Customer": customer_name,
-                "Content": content
-            })
+                file_customer_name = ' '.join(parts[2:-2])
+                if customer_name and file_customer_name != customer_name:
+                    continue
+                content = file.read_text()
+                reports.append({
+                    "Customer": file_customer_name,
+                    "Content": content
+                })
     
     return reports
 
@@ -190,11 +188,9 @@ if profiles:
                 }
         else:
             if cols[2].button(STRATEGY_CREATE_BUTTON, key=f"strategy_create_{idx}"):
-                # Get meetings and reports
-                meetings = list_saved_meetings()
-                customer_meetings = [m for m in meetings if m['customer_profile'] == row['Name']]
-                reports_list = list_meeting_reports()
-                customer_reports = [r for r in reports_list if r['Customer'] == row['Name']]
+                # Get meetings and reports for this customer
+                customer_meetings = list_saved_meetings(row['Name'])
+                customer_reports = list_meeting_reports(row['Name'])
                 
                 # Generate strategy
                 strategy_content = create_strategy(
