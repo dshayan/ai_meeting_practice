@@ -27,6 +27,7 @@ PROFILE_SAVE_ERROR = "Error saving profile: {}"
 PROFILE_SAVE_SUCCESS = "Profile '{}' saved successfully!"
 PROFILE_NAME_REQUIRED = "Please enter a profile name"
 NO_COMPLETE_PROFILE = "No complete profile found. Please continue the conversation until a full profile is generated."
+CANCEL_CREATION_BUTTON = "Cancel Creation"
 
 # View Profiles Page
 VIEW_PROFILES_TITLE = "Customer profiles"
