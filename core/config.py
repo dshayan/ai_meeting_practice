@@ -11,6 +11,7 @@ load_dotenv(env_path)
 # Base paths
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
+PROJECTS_DIR = DATA_DIR / "projects"
 MEETINGS_DIR = DATA_DIR / "meetings"
 MEETING_EVALUATIONS_DIR = DATA_DIR / "meeting_evaluations"
 RESPONSE_EVALUATIONS_DIR = DATA_DIR / "response_evaluations"
@@ -19,6 +20,7 @@ PROMPTS_DIR = BASE_DIR / "prompts"
 CUSTOMERS_DIR = BASE_DIR / "customers"
 
 # Create directories if they don't exist (with parents=True)
+PROJECTS_DIR.mkdir(parents=True, exist_ok=True)
 MEETINGS_DIR.mkdir(parents=True, exist_ok=True)
 MEETING_EVALUATIONS_DIR.mkdir(parents=True, exist_ok=True)
 RESPONSE_EVALUATIONS_DIR.mkdir(parents=True, exist_ok=True)
@@ -26,6 +28,7 @@ STRATEGIES_DIR.mkdir(parents=True, exist_ok=True)
 PROMPTS_DIR.mkdir(parents=True, exist_ok=True)
 CUSTOMERS_DIR.mkdir(parents=True, exist_ok=True)
 # File extensions
+PROJECT_EXTENSION = ".txt"
 PROFILE_EXTENSION = ".txt"
 MEETING_EXTENSION = ".json"
 REPORT_EXTENSION = ".txt"
