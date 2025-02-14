@@ -1,16 +1,26 @@
-# Environment and configuration
+# Data files
+data/
+logs/
+*.log
+
+# Virtual environments
+venv/
+env/
+
+# Environment variables and secrets
 .env
 .streamlit/secrets.toml
-.devcontainer/
 
-# Python
+# Python cache files
 __pycache__/
 *.pyc
 *.pyo
+
+# Development environments
+.devcontainer/
+
+# IDE specific files
+.vscode/
+
+# Operating system files
 .DS_Store
-
-# Virtual Environment
-venv/
-
-# Data directories
-data/
